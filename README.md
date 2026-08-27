@@ -1,4 +1,4 @@
-INSY7314 
+<img width="1600" height="1000" alt="WhatsApp Image 2026-08-27 at 17 53 52" src="https://github.com/user-attachments/assets/4a6d18ff-6123-486b-8429-923c78d80e12" />INSY7314 
 PART1
 MERN System Architecture 
 
@@ -361,6 +361,17 @@ ________________________________________
 13. Testing
 Postman is used to test the HustleHub+ REST API. (Postman, n.d.)
 The Postman collection demonstrates both successful and invalid scenarios. (Postman, n.d.)
+Postman Test Evidence
+
+Postman screenshots showing successful user registration, successful login with JWT token generation, and the API running over HTTPS are provided below as evidence of the implemented testing and security controls.
+
+Figure 1: Successful User Registration in Postman
+
+
+Figure 2: Successful Login and JWT Token Generation
+
+
+
 Successful Scenarios
 •	Successful user registration 
 •	Successful login 

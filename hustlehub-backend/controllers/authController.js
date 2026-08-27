@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const { findUserByEmail, addUser } = require('../models/userStore');
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -18,11 +18,11 @@ exports.register = async (req, res) => {
 
     return res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
-    return res.status(500).json({ message: 'Something went wrong' });
-  }
+    next(err);
+}
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -44,7 +44,6 @@ exports.login = async (req, res) => {
     // and include it in the response below, e.g. { message, email, token }
     return res.status(200).json({ message: 'Login successful', email: user.email });
   } catch (err) {
-    // TODO (Iqra): standardise this error response per Req 8 — no stack traces, consistent shape across all routes
-    return res.status(500).json({ message: 'Something went wrong' });
-  }
+    next(err);
+}
 };

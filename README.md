@@ -1,4 +1,4 @@
-<img width="1600" height="1000" alt="WhatsApp Image 2026-08-27 at 17 53 52" src="https://github.com/user-attachments/assets/4a6d18ff-6123-486b-8429-923c78d80e12" />INSY7314 
+
 PART1
 MERN System Architecture 
 

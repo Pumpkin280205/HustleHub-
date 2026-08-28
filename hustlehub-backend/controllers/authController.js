@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { findUserByEmail, addUser } = require('../models/userStore');
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -21,13 +21,15 @@ exports.register = async (req, res) => {
       message: 'User registered successfully'
     });
   } catch (err) {
+    next(err);
+}
     return res.status(500).json({
       message: 'Something went wrong'
     });
   }
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -65,6 +67,8 @@ exports.login = async (req, res) => {
       token
     });
   } catch (err) {
+    next(err);
+}
     return res.status(500).json({
       message: 'Something went wrong'
     });

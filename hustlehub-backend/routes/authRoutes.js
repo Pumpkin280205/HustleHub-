@@ -9,6 +9,14 @@ router.post('/register', register);
 
 router.post('/login', login);
 
+const {
+    validateRegister,
+    validateLogin
+} = require('../middleware/validationMiddleware');
+
+router.post('/register', validateRegister, register);
+router.post('/login', validateLogin, login);
+
 router.get('/protected', authenticateToken, (req, res) => {
   res.status(200).json({
     message: 'You have accessed a protected route',

@@ -9,6 +9,10 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 
+app.get('/', (req, res) => {
+    res.status(200).json({ success: true, message: 'HustleHub API is running' });
+});
+
 app.use('/api/auth', authRoutes);
 
 app.use((req, res, next) => {

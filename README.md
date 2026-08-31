@@ -1,5 +1,7 @@
 # HustleHub+ — Secure Freelance Marketplace
 
+Part 1 video link - https://youtu.be/EAS0zCbsnIk
+
 ## 1. System Overview
 
 HustleHub+ is a secure freelance marketplace platform that allows freelancers to advertise their services and clients to browse, book, and pay for those services.

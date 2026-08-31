@@ -430,6 +430,10 @@ The invalid test scenarios include:
 
 These tests help demonstrate that the application's authentication, validation, and authorisation controls operate as intended. (Postman, n.d.)
 
+<img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/fa122d3b-cfe1-4446-a86d-c59ba0cc50b7" />
+
+
+
 ---
 
 ## 14. Security Summary

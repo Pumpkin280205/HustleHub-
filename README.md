@@ -1,17 +1,3 @@
-
-PART1
-MERN System Architecture 
-
-
-
-The application follows a three-tier MERN architecture consisting of a React frontend, a Node.js and Express.js backend, and a MongoDB database. The React frontend provides the user interface through which organisation managers and registered users interact with the system. Communication between the frontend and backend occurs through REST API requests using HTTPS. (React, n.d.; Node.js, n.d.; Express.js, n.d.; MongoDB, n.d.)
-The backend forms the main application and security boundary. Node.js provides the runtime environment while Express.js handles HTTP requests and exposes the REST API endpoints. The backend contains separate routes, controllers and business logic to ensure that application responsibilities are appropriately separated. Authentication middleware is used to protect restricted resources and verify JSON Web Tokens (JWTs) supplied by authenticated users. (Node.js, n.d.; Express.js, n.d.)
-Security is implemented at multiple layers. Passwords are protected using encrypt hashing before being stored in MongoDB. JWT authentication is used to maintain authenticated sessions without storing sensitive authentication information in the database session. Joi validation is used to validate incoming request data before it reaches the business logic or database layer. HTTPS/TLS protects information while it is transmitted between the client and server. Additional Express security controls such as Helmet and rate limiting can be used to reduce common web-based attacks and excessive request attempts. (OWASP Foundation, n.d.; Jones, Bradley and Sakimura, 2015; Joi, n.d.)
-MongoDB provides persistent storage for users, organisations, polls and votes. The database is not accessed directly by the React client. All database operations are performed through the backend API, ensuring that authentication, authorisation and validation controls are applied before data is created, modified or retrieved. (MongoDB, n.d.)
-The architecture therefore establishes a clear system boundary between the client, application server and database. This separation improves maintainability and provides a foundation for extending the system while maintaining appropriate security controls.
-
-
-README 
 # HustleHub+ — Secure Freelance Marketplace
 
 ## 1. System Overview
@@ -28,7 +14,7 @@ The system uses a full-stack architecture consisting of a frontend application, 
 
 ## 2. Intended Users
 
-HustleHub+ is intended for two primary categories of users.
+HustleHub+ is intended for two primary categories of users: freelancers and clients.
 
 ### 2.1 Freelancers
 
@@ -36,13 +22,13 @@ Freelancers use the platform to advertise and manage the services they provide.
 
 Typical functionality includes:
 
-- Creating a freelancer account
-- Creating and managing service listings
-- Providing service descriptions and pricing
-- Viewing bookings
-- Tracking income generated from bookings
-- Viewing estimated tax obligations
-- Managing account information
+* Creating a freelancer account
+* Creating and managing service listings
+* Providing service descriptions and pricing
+* Viewing bookings
+* Tracking income generated from bookings
+* Viewing estimated tax obligations
+* Managing account information
 
 ### 2.2 Clients
 
@@ -50,102 +36,100 @@ Clients use HustleHub+ to find and book freelance services.
 
 Typical functionality includes:
 
-- Creating an account
-- Logging into the platform
-- Browsing available freelance services
-- Viewing service information and pricing
-- Booking services
-- Recording transactions associated with bookings
-- Viewing booking and transaction information
+* Creating an account
+* Logging into the platform
+* Browsing available freelance services
+* Viewing service information and pricing
+* Booking services
+* Recording transactions associated with bookings
+* Viewing booking and transaction information
 
 ---
 
 ## 3. System Architecture
 
-HustleHub+ follows a layered MERN web application architecture.
+HustleHub+ follows a layered MERN web application architecture consisting of a React.js frontend, a Node.js and Express.js backend, and a MongoDB database. The frontend provides the user interface through which freelancers and clients interact with the system. The backend provides the REST API, authentication, authorisation, validation, and business logic, while MongoDB provides persistent data storage. (React, n.d.; Node.js, n.d.; Express.js, n.d.; MongoDB, n.d.)
 
-The system consists of:
+The frontend communicates with the backend through RESTful API requests over HTTPS/TLS. The frontend does not communicate directly with the database. Instead, all database operations are performed by the backend after authentication, authorisation, and input validation have been applied. This creates a clear separation between the presentation layer, application layer, and data layer. (Express.js, n.d.; MongoDB, n.d.)
 
-- **Frontend** — provides the user interface
-- **Backend** — provides REST API endpoints and business logic
-- **Database** — provides persistent data storage
-- **Security Layer** — protects authentication, API requests, and sensitive information
-
-The frontend communicates with the backend through RESTful API requests. The frontend does not directly communicate with the database. (Express.js, n.d.)
-
-The backend validates requests, authenticates users, applies authorisation rules, processes business logic, and performs database operations. (Express.js, n.d.; MongoDB, n.d.)
-
-This architecture creates a clear separation between the presentation layer, application layer, and data layer.
-
-### Architecture Flow
+The architecture can be represented as follows:
 
 ```text
 Users
-  |
-  v
+   |
+   v
 React.js Frontend
-  |
-  | HTTPS / TLS
-  v
+   |
+   | HTTPS / TLS
+   v
 Node.js + Express.js REST API
-  |
-  +-----------------------------+
-  | Security Layer              |
-  |                             |
-  | JWT Authentication          |
-  | Authorisation               |
-  | Joi Validation              |
-  | bcrypt Password Hashing     |
-  | Helmet Security Headers     |
-  | Rate Limiting               |
-  +-----------------------------+
-  |
-  v
+   |
+   +--------------------------------+
+   | Security Layer                 |
+   |                                |
+   | JWT Authentication             |
+   | Authorisation                  |
+   | Joi Validation                 |
+   | bcrypt Password Hashing        |
+   | Helmet Security Headers        |
+   | Rate Limiting                  |
+   +--------------------------------+
+   |
+   v
 Business Logic
-  |
-  v
+   |
+   v
 MongoDB
-  |
-  +-- Users
-  +-- Services
-  +-- Bookings
-  +-- Transactions
-  +-- Income / Tax Information
-________________________________________
-4. Technology Stack (React, n.d.; Node.js, n.d.; MongoDB, n.d.)
-HustleHub+ uses the MERN technology stack. (React, n.d.; Node.js, n.d.; MongoDB, n.d.)
-Technology	Purpose
-MongoDB	Database and persistent data storage
-Express.js	Backend web framework and REST API
-React.js	Frontend user interface
-Node.js	Backend JavaScript runtime
-JWT	User authentication
-bcrypt	Password hashing
-Joi	Input validation
-HTTPS/TLS	Secure communication
-________________________________________
-5. Frontend Structure
-The frontend is developed using React.js.
-The frontend provides the user interface through which freelancers and clients interact with the system.
-Frontend functionality includes:
-•	User registration 
-•	User login 
-•	Freelancer dashboard 
-•	Client dashboard 
-•	Service browsing 
-•	Service management 
-•	Booking functionality 
-•	Transaction information 
-•	Income information 
-•	Estimated tax information 
-•	User account management 
-The frontend communicates with the backend using REST API requests. (Express.js, n.d.; React, n.d.)
-The frontend is not responsible for directly accessing the database. Requests containing user input or sensitive operations are sent to the backend, where they are validated and processed.
-________________________________________
-6. Backend Structure
-The backend is developed using Node.js and Express.js.
-The backend provides the REST API and contains the application's main business logic.
-A typical backend structure is:
+   |
+   +-- Users
+   +-- Services
+   +-- Bookings
+   +-- Transactions
+   +-- Income / Tax Information
+```
+
+This architecture establishes a clear system boundary between users, the application server, and the database. It also ensures that sensitive operations are handled by the backend rather than being performed directly by the client.
+
+---
+
+## 4. Technology Stack
+
+HustleHub+ uses the MERN technology stack, consisting of MongoDB, Express.js, React.js, and Node.js. Additional technologies are used to support authentication, password protection, input validation, and secure communication. (React, n.d.; Node.js, n.d.; MongoDB, n.d.)
+
+MongoDB is responsible for persistent data storage, while Express.js provides the backend web framework and REST API functionality. Node.js provides the JavaScript runtime environment for the backend, and React.js provides the frontend user interface. JWT, bcrypt, Joi, and HTTPS/TLS provide additional authentication, security, validation, and communication controls.
+
+| Technology | Purpose                                            |
+| ---------- | -------------------------------------------------- |
+| MongoDB    | Database and persistent data storage               |
+| Express.js | Backend web framework and REST API                 |
+| React.js   | Frontend user interface                            |
+| Node.js    | Backend JavaScript runtime                         |
+| JWT        | User authentication                                |
+| bcrypt     | Password hashing                                   |
+| Joi        | Input validation                                   |
+| HTTPS/TLS  | Secure communication between the client and server |
+
+---
+
+## 5. Frontend Structure
+
+The frontend of HustleHub+ is developed using React.js. It provides the user interface through which freelancers and clients interact with the system. React components are used to organise the application's interface and provide access to the functionality available to each type of user. (React, n.d.)
+
+The frontend provides functionality including user registration, user login, freelancer dashboards, client dashboards, service browsing, service management, booking functionality, transaction information, income information, estimated tax information, and account management.
+
+The frontend communicates with the backend using REST API requests. User input and requests involving sensitive operations are sent to the backend, where they are authenticated, validated, authorised, and processed. The frontend does not directly access MongoDB. (React, n.d.; Express.js, n.d.)
+
+This separation ensures that sensitive business logic and database operations remain within the backend security boundary.
+
+---
+
+## 6. Backend Structure
+
+The backend of HustleHub+ is developed using Node.js and Express.js. It provides the REST API and contains the application's main business logic. The backend is responsible for processing requests, authenticating users, applying authorisation rules, validating input, performing database operations, and returning appropriate responses to the frontend. (Node.js, n.d.; Express.js, n.d.)
+
+The backend can be organised into separate configuration, controller, middleware, model, route, and utility components. A typical structure is:
+
+```text
 backend/
 │
 ├── config/
@@ -185,267 +169,380 @@ backend/
 ├── .env
 ├── server.js
 └── package.json
-The exact structure may differ depending on the implementation.
-________________________________________
-7. Database
-MongoDB is used to persist the application's data.
-The database stores information required for the marketplace, including:
-•	User accounts 
-•	Freelancer service listings 
-•	Client bookings 
-•	Financial transactions 
-•	Income information 
-•	Estimated tax information 
-The frontend does not directly access MongoDB.
-All database operations are performed through the backend API. This ensures that authentication, authorisation, and validation can be applied before sensitive information is accessed or modified. (MongoDB, n.d.)
-________________________________________
-8. Security Decisions
-Security is a fundamental part of the HustleHub+ architecture because the platform processes sensitive user and financial information.
-The main security decisions include:
-1.	Password hashing using bcrypt  (OWASP Foundation, n.d.)
-2.	JWT authentication  (Jones, Bradley and Sakimura, 2015)
-3.	Input validation  (Joi, n.d.)
-4.	HTTPS/TLS communication  (MDN Web Docs, n.d.; Express.js, n.d.)
-5.	Authorisation  (MongoDB, n.d.)
-6.	Secure configuration through environment variables  (Express.js, n.d.)
-________________________________________
-8.1 Password Hashing — A
-User passwords are never stored as plain text.
-The system uses bcrypt to hash passwords before they are stored in the database. (OWASP Foundation, n.d.)
-The registration process is:
+```
+
+The exact structure may differ depending on the final implementation. Separating these responsibilities improves maintainability and makes it easier to manage authentication, validation, error handling, and business logic.
+
+---
+
+## 7. Database
+
+MongoDB is used as the persistent database for HustleHub+. The database stores the information required to operate the freelance marketplace, including user accounts, freelancer service listings, client bookings, financial transactions, income information, and estimated tax information. (MongoDB, n.d.)
+
+The frontend does not directly access MongoDB. All database operations are performed through the backend REST API. This allows the application to apply authentication, authorisation, and validation controls before sensitive information is accessed or modified. (MongoDB, n.d.)
+
+This approach helps protect the database from direct client-side access and ensures that database operations remain within the application's controlled backend environment.
+
+---
+
+## 8. Security Decisions
+
+Security is a fundamental part of the HustleHub+ architecture because the platform processes sensitive information, including user credentials, account information, booking information, financial transactions, income information, and estimated tax information.
+
+The main security decisions implemented or planned for the system include password hashing using bcrypt, JWT-based authentication, input validation using Joi, HTTPS/TLS communication, backend authorisation, secure configuration using environment variables, security headers using Helmet, and rate limiting. (OWASP Foundation, n.d.; Jones, Bradley and Sakimura, 2015; Joi, n.d.; MDN Web Docs, n.d.; Express.js, n.d.)
+
+---
+
+## 8.1 Password Hashing
+
+User passwords are never stored as plaintext. HustleHub+ uses bcrypt to hash passwords before they are stored in MongoDB. Password hashing protects the original password from being directly exposed if the database is compromised. (OWASP Foundation, n.d.)
+
+The registration process can be represented as follows:
+
+```text
 User enters password
-        |
-        v
+       |
+       v
 Backend receives password
-        |
-        v
+       |
+       v
 bcrypt hashes password
-        |
-        v
+       |
+       v
 Password hash stored in MongoDB
-During login, the password supplied by the user is compared against the stored bcrypt hash. (OWASP Foundation, n.d.)
-The original password is not stored in the database.
-This reduces the risk of exposing users' actual passwords if the database is compromised.
-________________________________________
-8.2 JWT Authentication — B (Jones, Bradley and Sakimura, 2015)
-HustleHub+ uses JSON Web Tokens (JWT) to authenticate users. (Jones, Bradley and Sakimura, 2015)
-After successfully logging in, the backend generates an authentication token.
-The authentication process is:
+```
+
+During login, the password supplied by the user is compared against the stored bcrypt hash. The original password is not stored in the database. (OWASP Foundation, n.d.)
+
+This approach reduces the risk of exposing users' actual passwords in the event of unauthorised database access.
+
+---
+
+## 8.2 JWT Authentication
+
+HustleHub+ uses JSON Web Tokens (JWT) to authenticate users and control access to protected API resources. JWT is a standard for securely representing claims between parties and can be used to transmit authentication information between the client and server. (Jones, Bradley and Sakimura, 2015)
+
+After successfully logging in, the backend generates an authentication token for the authenticated user. The authentication process can be represented as follows:
+
+```text
 User Login
-    |
-    v
+   |
+   v
 Backend validates credentials
-    |
-    v
-bcrypt verifies password (Jones, Bradley and Sakimura, 2015)
-    |
-    v
+   |
+   v
+bcrypt verifies password
+   |
+   v
 JWT generated
-    |
-    v
+   |
+   v
 Token returned to authenticated client
-    |
-    v
+   |
+   v
 Token included with protected API requests
-    |
-    v
+   |
+   v
 JWT middleware verifies token
-    |
-    v
+   |
+   v
 Request allowed or rejected
-Protected endpoints require a valid JWT.
-This prevents unauthenticated users from accessing restricted functionality such as managing services, viewing protected bookings, or accessing sensitive financial information.
-________________________________________
-8.3 Input Validation — C (Joi, n.d.)
-HustleHub+ validates incoming data before it is processed by the application's business logic or stored in MongoDB.
-Joi can be used to define validation schemas for requests such as:
-•	User registration 
-•	User login 
-•	Service creation 
-•	Service updates 
-•	Booking creation 
-•	Transaction information 
-•	Other API requests 
-Validation ensures that required fields are present and that submitted values follow the expected format.
-For example, registration validation can check:
-•	Required fields are provided 
-•	Email addresses follow the expected format 
-•	Passwords meet the required requirements 
-•	Invalid values are rejected 
+```
+
+Protected API endpoints require a valid JWT. This prevents unauthenticated users from accessing restricted functionality such as managing services, viewing protected bookings, or accessing sensitive financial information.
+
+---
+
+## 8.3 Input Validation
+
+HustleHub+ validates incoming data before it is processed by the application's business logic or stored in MongoDB. Joi can be used to define validation schemas for different API requests. (Joi, n.d.)
+
+Validation can be applied to requests such as user registration, user login, service creation, service updates, booking creation, transaction information, and other API operations.
+
+For example, registration validation can check that required fields are provided, email addresses follow the expected format, passwords meet the required requirements, and invalid values are rejected.
+
 This helps prevent malformed or unexpected data from entering the application.
-________________________________________
-8.4 HTTPS / TLS
-HustleHub+ should use HTTPS/TLS to protect communication between the frontend and backend. (MDN Web Docs, n.d.; Express.js, n.d.)
-This is particularly important because the application processes sensitive information such as:
-•	Login credentials 
-•	Authentication tokens 
-•	User information 
-•	Booking information 
-•	Transaction information 
-•	Income-related information 
-HTTPS encrypts information while it is transmitted between the client and server.
-Therefore, sensitive information is not transmitted through an unencrypted HTTP connection.
-________________________________________
-8.5 Authorisation (MongoDB, n.d.)
-Authentication determines whether a user is logged in, while authorisation determines what that authenticated user is allowed to access. (MongoDB, n.d.)
-HustleHub+ applies authorisation controls to protected functionality. (MongoDB, n.d.)
-For example:
-•	Freelancers can manage their own services. 
-•	Clients can create and manage their own bookings. 
-•	Users can access information associated with their own accounts. 
-•	Protected financial and income information requires appropriate authentication and authorisation. 
-Authorisation checks are performed by the backend rather than relying only on frontend restrictions. (MongoDB, n.d.)
-________________________________________
-8.6 Additional Security Controls
-Helmet
+
+---
+
+## 8.4 HTTPS / TLS
+
+HustleHub+ should use HTTPS/TLS to protect communication between the frontend and backend. TLS helps protect information while it is being transmitted between the client and server. (MDN Web Docs, n.d.)
+
+This is particularly important because the application processes sensitive information such as login credentials, authentication tokens, user information, booking information, transaction information, and income-related information.
+
+Using HTTPS prevents sensitive information from being transmitted through an unencrypted HTTP connection and helps protect data from interception during transmission.
+
+---
+
+## 8.5 Authorisation
+
+Authentication determines whether a user has successfully established their identity, while authorisation determines what that authenticated user is permitted to access.
+
+HustleHub+ applies authorisation controls to protected functionality. For example, freelancers should be able to manage their own services, clients should be able to create and manage their own bookings, and users should only be able to access information associated with their own accounts.
+
+Protected financial and income information should only be accessible to appropriately authenticated and authorised users. These authorisation checks are performed by the backend rather than relying solely on frontend restrictions.
+
+---
+
+## 8.6 Additional Security Controls
+
+Additional security controls can be implemented to strengthen the overall security of the application.
+
+### Helmet
+
 Helmet can be used with Express.js to configure HTTP security headers and reduce exposure to common web-based attacks. (Express.js, n.d.)
-Rate Limiting
-Rate limiting can restrict excessive requests to the API. (Express.js, n.d.)
-This is particularly useful for authentication endpoints because it can reduce the effectiveness of repeated login attempts and brute-force attacks.
-Environment Variables
-Sensitive configuration information should be stored using environment variables rather than directly in the source code. (Express.js, n.d.)
-Examples include:
-MONGO_URI
-JWT_SECRET
-API_KEYS
-A .env file should not be committed to the public repository.
-It should be included in .gitignore.
-________________________________________
-9. Financial Transactions
-HustleHub+ records financial transactions generated through service bookings.
-A transaction can be associated with:
-•	Client 
-•	Freelancer 
-•	Service 
-•	Booking 
-•	Amount 
-•	Transaction status 
-Financial information is handled through the backend rather than being directly manipulated by the frontend.
-This ensures that transaction-related operations are subject to authentication, authorisation, and validation. (MongoDB, n.d.)
-________________________________________
-10. Income and Estimated Tax Information
-The system provides users with an indication of income earned and estimated tax obligations based on the financial information recorded through bookings and transactions.
-Income-related information is considered sensitive and should only be accessible to appropriately authenticated users.
-The backend is responsible for processing the relevant financial information and providing the appropriate results to the frontend.
-The tax information displayed by HustleHub+ should be treated as an estimate rather than professional tax advice.
-________________________________________
-11. API Structure
-The backend exposes RESTful API endpoints for the main functionality of HustleHub+.
+
+### Rate Limiting
+
+Rate limiting can restrict excessive requests to the API. This is particularly useful for authentication endpoints because it can reduce the effectiveness of repeated login attempts and brute-force attacks. (Express.js, n.d.)
+
+### Environment Variables
+
+Sensitive configuration information should be stored using environment variables rather than directly in the source code. Examples include the MongoDB connection string, JWT secret, and API keys.
+
+Example:
+
+```text
+MONGO_URI=<your-mongodb-connection-string>
+JWT_SECRET=<your-jwt-secret>
+API_KEYS=<your-api-keys>
+```
+
+The `.env` file should not be committed to the public repository. It should be included in the `.gitignore` file to prevent sensitive configuration information from being exposed.
+
+---
+
+## 9. Financial Transactions
+
+HustleHub+ records financial transactions generated through service bookings. A transaction can contain information relating to the client, freelancer, service, booking, transaction amount, and transaction status.
+
+Financial information is handled through the backend rather than being directly manipulated by the frontend. This ensures that transaction-related operations are subject to authentication, authorisation, and input validation before being processed or stored. (MongoDB, n.d.)
+
+The backend therefore acts as the main security boundary for financial operations and database access.
+
+---
+
+## 10. Income and Estimated Tax Information
+
+HustleHub+ provides users with an indication of income earned and estimated tax obligations based on financial information recorded through bookings and transactions.
+
+Income-related information is considered sensitive and should only be accessible to appropriately authenticated and authorised users. The backend is responsible for processing the relevant financial information and providing the appropriate results to the frontend.
+
+The tax information displayed by HustleHub+ should be treated as an estimate rather than professional tax advice. The system is intended to provide users with an indication of their potential tax obligations based on the information recorded within the application.
+
+---
+
+## 11. API Structure
+
+The HustleHub+ backend exposes RESTful API endpoints for the main functionality of the application. The API provides a structured communication layer between the React frontend and the backend application.
+
 Example endpoint groups include:
+
+```text
 /api/auth
 /api/users
 /api/services
 /api/bookings
 /api/transactions
 /api/tax
+```
+
 Authentication endpoints may include:
+
+```text
 POST /api/auth/register
 POST /api/auth/login
-Protected endpoints require an authentication token.
-Example:
+```
+
+Protected endpoints require a valid authentication token. An authenticated request may include the token using the following format:
+
+```text
 Authorization: Bearer <JWT_TOKEN>
+```
+
 The backend verifies the token before allowing access to protected resources.
-________________________________________
-12. Error Handling
-The API uses HTTP status codes to communicate the result of requests.
-Status Code	Meaning
-200	Successful request
-201	Resource successfully created
-400	Invalid request or validation failure
-401	Authentication required or invalid
-403	User does not have permission
-404	Resource not found
-500	Internal server error
-Appropriate error responses allow the frontend to provide meaningful feedback to users without exposing sensitive backend information.
-________________________________________
-13. Testing
-Postman is used to test the HustleHub+ REST API. (Postman, n.d.)
-The Postman collection demonstrates both successful and invalid scenarios. (Postman, n.d.)
-Postman Test Evidence
 
-Postman screenshots showing successful user registration, successful login with JWT token generation, and the API running over HTTPS are provided below as evidence of the implemented testing and security controls.
+This API structure provides a consistent communication mechanism between the frontend and backend while ensuring that authentication, validation, and authorisation controls can be applied to protected operations.
 
-Figure 1: Successful User Registration in Postman
+---
 
+## 12. Error Handling
 
-Figure 2: Successful Login and JWT Token Generation
+The API uses HTTP status codes to communicate the result of requests. Appropriate status codes allow the frontend to determine whether a request was successful or whether an error occurred.
 
+| Status Code | Meaning                                              |
+| ----------- | ---------------------------------------------------- |
+| 200         | Successful request                                   |
+| 201         | Resource successfully created                        |
+| 400         | Invalid request or validation failure                |
+| 401         | Authentication required or invalid authentication    |
+| 403         | User does not have permission to access the resource |
+| 404         | Resource not found                                   |
+| 500         | Internal server error                                |
 
+Appropriate error responses allow the frontend to provide meaningful feedback to users without exposing sensitive backend information. Error handling should therefore provide sufficient information for the client to understand the result of a request while avoiding the disclosure of internal system details.
 
-Successful Scenarios
-•	Successful user registration 
-•	Successful login 
-•	Successful JWT authentication  (Jones, Bradley and Sakimura, 2015)
-•	Successful service creation 
-•	Successful service retrieval 
-•	Successful booking 
-•	Successful transaction processing 
-Invalid Scenarios
-•	Registration with invalid information 
-•	Registration using an existing email address 
-•	Login using an incorrect password 
-•	Login using a non-existent account 
-•	Accessing protected endpoints without a JWT 
-•	Accessing protected endpoints using an invalid JWT 
-•	Submitting invalid service information 
-•	Submitting invalid booking information 
-These tests demonstrate that the application's authentication, validation, and authorisation controls operate as intended. (Postman, n.d.)
-________________________________________
-14. Security Summary
-Security Decision	Implementation	Purpose
-Password protection	bcrypt	Prevents plain-text passwords from being stored
-Authentication	JWT	Authenticates users accessing protected resources
-Input validation	Joi	Ensures API input follows expected formats
-HTTPS	TLS/SSL	Encrypts data during transmission
-Security headers	Helmet	Provides additional HTTP security controls
-Rate limiting	Express rate limiter	Helps reduce excessive and brute-force requests
-Environment variables	.env	Protects sensitive configuration and secrets
-Authorisation	Backend middleware	Prevents users from accessing unauthorised resources
-________________________________________
-15. Security Approach
-Security is incorporated throughout the HustleHub+ system rather than being added after development.
-The frontend, backend, and database are separated so that users cannot directly access sensitive database information. Authentication and authorisation are applied to protected API endpoints, while input validation ensures that data is checked before being processed. (MongoDB, n.d.; Express.js, n.d.)
+---
+
+## 13. Testing
+
+Postman is used to test the HustleHub+ REST API. The Postman collection can be used to demonstrate both successful and invalid API scenarios. (Postman, n.d.)
+
+### Postman Test Evidence
+
+Postman screenshots showing successful user registration, successful login with JWT token generation, and the API operating over HTTPS should be provided as evidence of the implemented testing and security controls.
+
+**Figure 1: Successful User Registration in Postman**
+
+*Insert screenshot here.*
+
+**Figure 2: Successful Login and JWT Token Generation**
+
+*Insert screenshot here.*
+
+### Successful Scenarios
+
+The successful test scenarios include:
+
+* Successful user registration
+* Successful login
+* Successful JWT authentication
+* Successful service creation
+* Successful service retrieval
+* Successful booking
+* Successful transaction processing
+
+These tests verify that the main functionality of the API operates as expected. (Jones, Bradley and Sakimura, 2015; Postman, n.d.)
+
+### Invalid Scenarios
+
+The invalid test scenarios include:
+
+* Registration using invalid information
+* Registration using an existing email address
+* Login using an incorrect password
+* Login using a non-existent account
+* Accessing protected endpoints without a JWT
+* Accessing protected endpoints using an invalid JWT
+* Submitting invalid service information
+* Submitting invalid booking information
+
+These tests help demonstrate that the application's authentication, validation, and authorisation controls operate as intended. (Postman, n.d.)
+
+---
+
+## 14. Security Summary
+
+The main security controls implemented within HustleHub+ are summarised below.
+
+| Security Decision     | Implementation       | Purpose                                              |
+| --------------------- | -------------------- | ---------------------------------------------------- |
+| Password protection   | bcrypt               | Protects passwords from being stored as plaintext    |
+| Authentication        | JWT                  | Authenticates users accessing protected resources    |
+| Input validation      | Joi                  | Ensures API input follows expected formats           |
+| HTTPS                 | TLS                  | Protects data during transmission                    |
+| Security headers      | Helmet               | Provides additional HTTP security controls           |
+| Rate limiting         | Express rate limiter | Helps reduce excessive and brute-force requests      |
+| Environment variables | `.env`               | Protects sensitive configuration and secrets         |
+| Authorisation         | Backend middleware   | Prevents users from accessing unauthorised resources |
+
+---
+
+## 15. Security Approach
+
+Security is incorporated throughout the HustleHub+ system rather than being added after development. The frontend, backend, and database are separated so that users cannot directly access sensitive database information. Authentication and authorisation are applied to protected API endpoints, while input validation ensures that data is checked before being processed. (MongoDB, n.d.; Express.js, n.d.)
+
 Passwords are protected using bcrypt hashing, authentication is implemented using JWT, and HTTPS/TLS protects data during transmission. (OWASP Foundation, n.d.; Jones, Bradley and Sakimura, 2015; MDN Web Docs, n.d.)
+
 These controls are particularly important for HustleHub+ because the platform processes not only account information but also booking, transaction, income, and estimated tax information.
-________________________________________
-16. Running the Application
-Backend
-Navigate to the backend directory:
+
+The combination of authentication, authorisation, password protection, validation, secure communication, security headers, rate limiting, and secure configuration provides a layered security approach for the application.
+
+---
+
+## 16. Running the Application
+
+### Backend
+
+To run the backend, navigate to the backend directory:
+
+```bash
 cd backend
-Install the dependencies:
+```
+
+Install the required dependencies:
+
+```bash
 npm install
-Create a .env file containing the required configuration.
+```
+
+Create a `.env` file containing the required configuration.
+
 Example:
+
+```text
 PORT=5000
 MONGO_URI=<your-mongodb-connection-string>
 JWT_SECRET=<your-jwt-secret>
+```
+
 Start the development server:
+
+```bash
 npm run dev
-________________________________________
-Frontend
-Navigate to the frontend directory:
+```
+
+### Frontend
+
+To run the frontend, navigate to the frontend directory:
+
+```bash
 cd frontend
-Install the dependencies:
+```
+
+Install the required dependencies:
+
+```bash
 npm install
+```
+
 Start the React application:
+
+```bash
 npm start
-The React frontend can then communicate with the Node.js/Express backend through the configured REST API. (React, n.d.; Express.js, n.d.)
-________________________________________
-17. Project Purpose
+```
+
+The React frontend can then communicate with the Node.js and Express.js backend through the configured REST API. (React, n.d.; Express.js, n.d.)
+
+---
+
+## 17. Project Purpose
+
 HustleHub+ demonstrates the development of a secure full-stack freelance marketplace that combines marketplace functionality with financial transaction recording and income-related information.
+
 The system applies security throughout the development process, including authentication, password protection, input validation, secure communication, authorisation, API testing, and secure configuration. (OWASP Foundation, n.d.; Postman, n.d.; MongoDB, n.d.)
+
 The project therefore provides a foundation for a functional, secure, testable, and maintainable freelance marketplace platform.
 
+---
 
+# Reference List
 
- 
-Reference List
-Express.js (n.d.) Production best practices: security. Available at: https://expressjs.com/en/advanced/best-practice-security/ (Accessed: 27 August 2026).
-Jones, M., Bradley, J. and Sakimura, N. (2015) JSON Web Token (JWT), RFC 7519. Available at: https://datatracker.ietf.org/doc/rfc7519/ (Accessed: 27 August 2026).
-Joi (n.d.) API documentation. Available at: https://joi.dev/api/18.x.x (Accessed: 27 August 2026).
-MDN Web Docs (n.d.) Transport Layer Security (TLS). Available at: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security (Accessed: 27 August 2026).
-MongoDB (n.d.) Security. Available at: https://www.mongodb.com/docs/v8.0/security/ (Accessed: 27 August 2026).
-Node.js (n.d.) About Node.js. Available at: https://nodejs.org/en/about (Accessed: 27 August 2026).
-OWASP Foundation (n.d.) Password Storage Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html (Accessed: 27 August 2026).
-Postman (n.d.) API testing. Available at: https://www.postman.com/api-platform/api-testing/ (Accessed: 27 August 2026).
-React (n.d.) React documentation. Available at: https://react.dev/ (Accessed: 27 August 2026).
+Express.js (n.d.) *Production best practices: security*. Available at: https://expressjs.com/en/advanced/best-practice-security/ (Accessed: 27 August 2026).
+
+Jones, M., Bradley, J. and Sakimura, N. (2015) *JSON Web Token (JWT), RFC 7519*. Available at: https://datatracker.ietf.org/doc/rfc7519/ (Accessed: 27 August 2026).
+
+Joi (n.d.) *API documentation*. Available at: https://joi.dev/api/18.x.x (Accessed: 27 August 2026).
+
+MDN Web Docs (n.d.) *Transport Layer Security (TLS)*. Available at: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security (Accessed: 27 August 2026).
+
+MongoDB (n.d.) *Security*. Available at: https://www.mongodb.com/docs/v8.0/security/ (Accessed: 27 August 2026).
+
+Node.js (n.d.) *About Node.js*. Available at: https://nodejs.org/en/about (Accessed: 27 August 2026).
+
+OWASP Foundation (n.d.) *Password Storage Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html (Accessed: 27 August 2026).
+
+Postman (n.d.) *API testing*. Available at: https://www.postman.com/api-platform/api-testing/ (Accessed: 27 August 2026).
+
+React (n.d.) *React documentation*. Available at: https://react.dev/ (Accessed: 27 August 2026).

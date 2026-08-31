@@ -432,6 +432,18 @@ These tests help demonstrate that the application's authentication, validation, 
 
 <img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/fa122d3b-cfe1-4446-a86d-c59ba0cc50b7" />
 
+<img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/3e560625-c884-4c8d-8363-b1869fc1a69a" />
+
+<img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/c260b3fd-64e5-463b-a1be-eb887295f3f4" />
+
+<img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/2297b12f-22bb-414e-b524-e07a0bdf36ae" />
+
+<img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/f6b2c18b-8816-4c0e-83e7-f375ed8857ff" />
+
+
+<img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/52dd12d8-6de5-49be-877a-4bd7ae9b9ea2" />
+
+
 
 
 ---

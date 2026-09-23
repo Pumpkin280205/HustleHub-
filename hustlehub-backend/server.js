@@ -13,17 +13,13 @@ const sslOptions = {
   cert: fs.readFileSync(path.join(__dirname, 'ssl', 'cert.pem'))
 };
 
-https.createServer(sslOptions, app).listen(PORT, () => {
-  console.log(`Server running on https://localhost:${PORT}`);
-});
-
 connectDB()
   .then(() => {
     https.createServer(sslOptions, app).listen(PORT, () => {
       console.log(`Server running on https://localhost:${PORT}`);
     });
   })
-  .catch(() => {
-    console.error('Failed to connect to database');
+  .catch((err) => {
+    console.error('Failed to connect to database:', err.message);
     process.exit(1);
   });

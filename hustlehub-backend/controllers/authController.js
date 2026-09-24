@@ -1,25 +1,20 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { findUserByEmail, addUser } = require('../models/User');
+const User = require('../models/User');
 
 exports.register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email.toLowerCase();
+    const { password, role } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password required' });
-    }
-
-    if (findUserByEmail(email)) {
-      return res.status(409).json({ message: 'User already exists' });
+    if (await User.findOne({ email })) {
+      return res.status(409).json({ success: false, message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    addUser({ email, password: hashedPassword });
+    await User.create({ email, password: hashedPassword, role });
 
-    return res.status(201).json({
-      message: 'User registered successfully'
-    });
+    return res.status(201).json({ success: true, message: 'User registered successfully' });
   } catch (err) {
     next(err);
   }
@@ -27,39 +22,28 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email.toLowerCase();
+    const { password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        message: 'Email and password required'
-      });
-    }
+    // password has select:false on the model, so ask for it explicitly
+    const user = await User.findOne({ email }).select('+password');
 
-    const user = findUserByEmail(email);
-
-    if (!user) {
-      return res.status(401).json({
-        message: 'Invalid credentials'
-      });
-    }
-
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-      return res.status(401).json({
-        message: 'Invalid credentials'
-      });
+    // Same response for unknown email and wrong password so attackers can't discover accounts
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
     const token = jwt.sign(
-      { id: user.id },
+      { id: user._id.toString(), role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
     return res.status(200).json({
+      success: true,
       message: 'Login successful',
       email: user.email,
+      role: user.role,
       token
     });
   } catch (err) {

@@ -1,7 +1,6 @@
-import { createContext, useContext, useState } from 'react';
+import { useState } from 'react';
 import { STORAGE_KEY } from '../api/client';
-
-const AuthContext = createContext(null);
+import { AuthContext } from './authContextValue';
 
 // Read the stored session, discarding it if the JWT has expired
 const loadSession = () => {
@@ -40,5 +39,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
-export const useAuth = () => useContext(AuthContext);

@@ -8,6 +8,8 @@
   --primary-hover: #4338ca;
   --error: #b42318;
   --error-bg: #fef3f2;
+  --success: #067647;
+  --success-bg: #ecfdf3;
   --radius: 8px;
   --shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
 
@@ -152,6 +154,15 @@ button:disabled {
   color: var(--error);
   background: var(--error-bg);
   border: 1px solid #fecdca;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+  margin: 0;
+}
+
+.success {
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid #abefc6;
   border-radius: var(--radius);
   padding: 0.6rem 0.75rem;
   margin: 0;

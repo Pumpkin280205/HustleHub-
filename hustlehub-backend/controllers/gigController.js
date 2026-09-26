@@ -9,12 +9,12 @@ const findOwnedGig = async (gigId, userId) => {
 };
 
 exports.getAllGigs = async (req, res) => {
-  const gigs = await Gig.find().populate('freelancer', 'email').sort({ createdAt: -1 });
+  const gigs = await Gig.find().sort({ createdAt: -1 });
   res.status(200).json({ success: true, count: gigs.length, gigs });
 };
 
 exports.getGigById = async (req, res) => {
-  const gig = await Gig.findById(req.params.id).populate('freelancer', 'email');
+  const gig = await Gig.findById(req.params.id);
   if (!gig) return res.status(404).json({ success: false, message: 'Gig not found' });
   res.status(200).json({ success: true, gig });
 };

@@ -7,10 +7,13 @@ const registerSchema = Joi.object({
 
     password: Joi.string()
         .min(8)
+        // bcrypt ignores everything after 72 bytes, so longer passwords are rejected
+        .max(72, 'utf8')
         .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$'))
         .required()
         .messages({
             'string.min': 'Password must be at least 8 characters long',
+            'string.max': 'Password must be at most 72 characters long',
             'string.pattern.base': 'Password must contain uppercase, lowercase, number and special character'
         }),
 

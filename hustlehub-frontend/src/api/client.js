@@ -43,4 +43,11 @@ export const getErrorMessage = (error) => {
   return 'Something went wrong. Please try again.';
 };
 
+export const getFieldErrors = (error) => {
+  const list = error.response?.status === 400 ? error.response.data?.errors : null;
+  if (!Array.isArray(list)) return {};
+  return Object.fromEntries(list.map(({ field, message }) => [field, message.replace(/"/g, '')]));
+};
+
+
 export default api;

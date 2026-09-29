@@ -35,6 +35,8 @@ const loginSchema = Joi.object({
         .required()
 });
 
+const GIG_CATEGORIES = ['Design', 'Writing', 'Development', 'Marketing', 'Video & Animation', 'Music & Audio', 'Business', 'Other'];
+
 const gigCreateSchema = Joi.object({
     title: Joi.string()
         .trim()
@@ -48,19 +50,22 @@ const gigCreateSchema = Joi.object({
         .max(2000)
         .required(),
 
-    category: Joi.string()
-        .trim()
-        .max(50)
-        .required(),
+        category: Joi.string()
+        .valid(...GIG_CATEGORIES)
+        .required()
+        .messages({
+            'any.only': 'Choose a valid category'
+        }),
 
-    price: Joi.number()
-        .positive()
+        price: Joi.number()
+        .min(1)
         .precision(2)
         .max(1000000)
         .required()
         .messages({
-            'number.positive': 'Price must be greater than 0'
+            'number.min': 'Price must be at least R1'
         })
+
 });
 
 // Same rules as create, but every field is optional and at least one must be sent

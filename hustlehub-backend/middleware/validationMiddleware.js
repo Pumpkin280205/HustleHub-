@@ -133,5 +133,6 @@ module.exports = {
     validateLogin,
     validateGigCreate,
     validateGigUpdate,
-    validateObjectId
+    validateObjectId,
+    validateBookingCreate
 };

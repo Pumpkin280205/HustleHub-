@@ -1,2 +1,4 @@
 node_modules/
 .env
+# Postman collection (kept local for now; re-add before final submission)
+postman/

@@ -25,6 +25,10 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/gigs', require('./routes/gigRoutes'));
 
+app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/transactions', require('./routes/transactionRoutes'));
+
+
 app.use((req, res, next) => {
     const error = new Error('Route not found');
     error.statusCode = 404;

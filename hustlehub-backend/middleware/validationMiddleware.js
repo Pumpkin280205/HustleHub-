@@ -109,6 +109,20 @@ const validateObjectId = (req, res, next) => {
     next();
 };
 
+const bookingCreateSchema = Joi.object({
+    gigId: Joi.string()
+        .hex()
+        .length(24)
+        .required()
+        .messages({
+            'string.hex': 'Invalid gig ID',
+            'string.length': 'Invalid gig ID'
+        })
+});
+
+const validateBookingCreate = validate(bookingCreateSchema);
+
+
 const validateRegister = validate(registerSchema);
 const validateLogin = validate(loginSchema);
 const validateGigCreate = validate(gigCreateSchema);

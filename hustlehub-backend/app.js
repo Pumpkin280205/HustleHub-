@@ -28,6 +28,7 @@ app.use('/api/gigs', require('./routes/gigRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/transactions', require('./routes/transactionRoutes'));
 
+app.use('/api/income', require('./routes/incomeRoutes'));
 
 app.use((req, res, next) => {
     const error = new Error('Route not found');

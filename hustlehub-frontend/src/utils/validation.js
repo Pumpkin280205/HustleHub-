@@ -20,3 +20,29 @@ export function validateRegister({ email, password, confirmPassword, role }) {
   if (!['client', 'freelancer'].includes(role)) errors.role = 'Choose an account type';
   return errors;
 }
+
+// Keep in sync with GIG_CATEGORIES in the backend validation middleware
+export const GIG_CATEGORIES = ['Design', 'Writing', 'Development', 'Marketing', 'Video & Animation', 'Music & Audio', 'Business', 'Other'];
+
+export function validateGig({ title, description, category, price }) {
+  const errors = {};
+
+  const t = title.trim();
+  if (t.length < 3) errors.title = 'Title must be at least 3 characters';
+  else if (t.length > 100) errors.title = 'Title must be 100 characters or fewer';
+
+  const d = description.trim();
+  if (d.length < 10) errors.description = 'Description must be at least 10 characters';
+  else if (d.length > 2000) errors.description = 'Description must be 2000 characters or fewer';
+
+  if (!GIG_CATEGORIES.includes(category)) errors.category = 'Choose a category';
+
+  const amount = Number(price);
+  if (price === '' || Number.isNaN(amount)) errors.price = 'Enter a price';
+  else if (amount < 1) errors.price = 'Price must be at least R1';
+  else if (amount > 1000000) errors.price = 'Price must be R1,000,000 or less';
+  else if (!/^\d+(\.\d{1,2})?$/.test(String(price))) errors.price = 'Use at most 2 decimal places';
+
+  return errors;
+}
+

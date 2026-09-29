@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import api, { getErrorMessage } from '../api/client';
 import { useAuth } from '../context/useAuth';
 import { formatCurrency } from '../utils/format';
+import { formatCurrency, formatDate } from '../utils/format';
 
-const formatDate = (iso) => new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+//const formatDate = (iso) => new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 
 export default function MyBookings() {
   const { user } = useAuth();

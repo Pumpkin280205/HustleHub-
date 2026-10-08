@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const xss = require('xss');
 
 const registerSchema = Joi.object({
     email: Joi.string()
@@ -96,7 +97,15 @@ const validate = (schema) => {
 
         // Replace the body with the cleaned value so unknown fields
         // (e.g. a spoofed "freelancer" id) never reach the controllers
-        req.body = value;
+       req.body = Object.fromEntries(
+    Object.entries(value).map(([key, val]) => {
+        if (typeof val === 'string') {
+            return [key, xss(val.trim())];
+        }
+
+        return [key, val];
+    })
+);
 
         next();
     };

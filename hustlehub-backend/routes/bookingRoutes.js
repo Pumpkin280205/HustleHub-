@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 
@@ -9,34 +8,18 @@ const {
     validateObjectId
 } = require('../middleware/validationMiddleware');
 const { bookingLimiter } = require('../middleware/rateLimiters');
-
-const {
-validateBookingCreate,
-validateObjectId
-} = require('../middleware/validationMiddleware');
-
-const { bookingLimiter } = require('../middleware/rateLimitMiddleware');
 const c = require('../controllers/bookingController');
 
 // All booking routes require authentication.
 router.use(authenticateToken);
 
+// Only clients can create bookings; the limiter runs after the role check so it counts per client.
 router.post(
     '/',
     authorizeRoles('client'),
     bookingLimiter,
     validateBookingCreate,
     c.createBooking
-);
-
-router.get('/mine', c.getMyBookings);
-// Only clients can create bookings.
-router.post(
-'/',
-bookingLimiter,
-authorizeRoles('client'),
-validateBookingCreate,
-c.createBooking
 );
 
 // Keep /mine before /:id.

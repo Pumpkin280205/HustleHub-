@@ -1,4 +1,3 @@
-
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -11,6 +10,7 @@ const errorHandler = require('./middleware/errorMiddleware');
 
 const app = express();
 
+// Add HTTP security headers, including an explicit Content Security Policy.
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
@@ -23,10 +23,6 @@ app.use(helmet({
     }
 }));
 
-app.use(express.json());
-// Add common HTTP security headers.
-app.use(helmet());
-
 // Parse JSON request bodies.
 app.use(express.json());
 
@@ -37,12 +33,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// General API rate limiting.
 app.use('/api', apiLimiter);
-// Import routes and middleware.
-const authRoutes = require('./routes/authRoutes');
-const errorHandler = require('./middleware/errorMiddleware');
-
-
 
 // API health check.
 app.get('/', (req, res) => {
@@ -52,15 +44,8 @@ app.get('/', (req, res) => {
     });
 });
 
+// Authentication routes, with brute-force rate limiting.
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
-  res.status(200).json({
-    success: true,
-    message: 'HustleHub API is running'
-  });
-});
-
-// Apply separate rate limits to login and registration.
-app.use('/api/auth', authRoutes);
 
 // Other API routes.
 app.use('/api/gigs', require('./routes/gigRoutes'));
@@ -75,10 +60,6 @@ app.use((req, res, next) => {
     error.statusCode = 404;
     error.publicMessage = 'Route not found';
     next(error);
-  const error = new Error('Route not found');
-  error.statusCode = 404;
-  error.publicMessage = 'Route not found';
-  next(error);
 });
 
 // Centralized error handling.

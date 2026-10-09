@@ -1,0 +1,446 @@
+{
+  "info": {
+    "_postman_id": "0c94cdc2-5473-483f-a11f-0d863180a620",
+    "name": "HustleHub - Rate Limits",
+    "description": "Rate-limiting evidence for HustleHub+ (Part 2, requirement 7). Run this AFTER the main HustleHub - Gigs collection, and only once.\n\nIt deliberately exhausts the limiters: the booking limiter (per client) and the auth limiter (failed attempts, per IP).\nAfterwards, logins and registrations from this machine are blocked for 15 minutes. Restart the backend (type rs in the nodemon terminal) to clear the limits immediately.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:5000/api"
+    },
+    {
+      "key": "password",
+      "value": "Passw0rd!"
+    },
+    {
+      "key": "runId",
+      "value": ""
+    },
+    {
+      "key": "tokenA",
+      "value": ""
+    },
+    {
+      "key": "tokenB",
+      "value": ""
+    },
+    {
+      "key": "tokenClient",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Setup",
+      "item": [
+        {
+          "name": "1.1 Register freelancer A",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"runId\", Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Registered\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"freelancerA{{runId}}@test.com\",\n  \"password\": \"{{password}}\",\n  \"role\": \"freelancer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "1.2 Register freelancer B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Registered\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"freelancerB{{runId}}@test.com\",\n  \"password\": \"{{password}}\",\n  \"role\": \"freelancer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "1.3 Register client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Registered\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"client{{runId}}@test.com\",\n  \"password\": \"{{password}}\",\n  \"role\": \"client\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "1.4 Login freelancer A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeds\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a token\", () => pm.expect(pm.response.json().token).to.be.a(\"string\"));",
+                  "pm.test(\"Role is freelancer\", () => pm.expect(pm.response.json().role).to.eql(\"freelancer\"));",
+                  "pm.collectionVariables.set(\"tokenA\", pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"freelancerA{{runId}}@test.com\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "1.5 Login freelancer B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeds\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a token\", () => pm.expect(pm.response.json().token).to.be.a(\"string\"));",
+                  "pm.collectionVariables.set(\"tokenB\", pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"freelancerB{{runId}}@test.com\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "1.6 Login client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeds\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a token\", () => pm.expect(pm.response.json().token).to.be.a(\"string\"));",
+                  "pm.test(\"Role is client\", () => pm.expect(pm.response.json().role).to.eql(\"client\"));",
+                  "pm.collectionVariables.set(\"tokenClient\", pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"client{{runId}}@test.com\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Rate Limiting",
+      "description": "Run last. These requests intentionally exhaust the limiters. The booking limiter is per user, so it only blocks this run's client. The auth limiter is per IP and blocks all logins from this machine for 15 minutes.",
+      "item": [
+        {
+          "name": "2.1 Booking limiter blocks a client after 20 attempts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const MAX_ATTEMPTS = 25;",
+                  "const baseUrl = pm.collectionVariables.get(\"baseUrl\");",
+                  "let attempts = 0;",
+                  "const fire = () => {",
+                  "  attempts++;",
+                  "  pm.sendRequest({ url: `${baseUrl}/bookings`, method: \"POST\", header: { \"Content-Type\": \"application/json\", Authorization: `Bearer ${pm.collectionVariables.get(\"tokenClient\")}` }, body: { mode: \"raw\", raw: \"{}\" } }, (err, res) => {",
+                  "    if (err) return pm.test(\"Request sent\", () => { throw err; });",
+                  "    if (res.code !== 429 && attempts < MAX_ATTEMPTS) return fire();",
+                  "    pm.test(\"Booking limiter returns 429\", () => pm.expect(res.code).to.eql(429));",
+                  "    pm.test(\"Error message returned\", () => {",
+                  "      const body = res.json();",
+                  "      pm.expect(body.success).to.be.false;",
+                  "      pm.expect(body.message).to.include(\"15 minutes\");",
+                  "    });",
+                  "    pm.test(\"Retry-After header sent\", () => pm.expect(res.headers.has(\"Retry-After\")).to.be.true);",
+                  "    console.log(`${attempts} extra request(s) needed to hit the limit`);",
+                  "  });",
+                  "};",
+                  "fire();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/bookings/mine",
+            "description": "Sends empty booking bodies. The limiter runs before validation, so these 400s still count towards the limit without creating any bookings."
+          }
+        },
+        {
+          "name": "2.2 Freelancer bookings unaffected by client limit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/bookings/mine",
+            "description": "The booking limiter is keyed on the user id, so one client hitting the limit does not block other users."
+          }
+        },
+        {
+          "name": "2.3 Auth limiter blocks repeated failed logins",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const MAX_ATTEMPTS = 15;",
+                  "const baseUrl = pm.collectionVariables.get(\"baseUrl\");",
+                  "let attempts = 0;",
+                  "const fire = () => {",
+                  "  attempts++;",
+                  "  pm.sendRequest({ url: `${baseUrl}/auth/login`, method: \"POST\", header: { \"Content-Type\": \"application/json\" }, body: { mode: \"raw\", raw: JSON.stringify({ email: `freelancerA${pm.collectionVariables.get(\"runId\")}@test.com`, password: \"WrongPassw0rd!\" }) } }, (err, res) => {",
+                  "    if (err) return pm.test(\"Request sent\", () => { throw err; });",
+                  "    if (res.code !== 429 && attempts < MAX_ATTEMPTS) return fire();",
+                  "    pm.test(\"Auth limiter returns 429\", () => pm.expect(res.code).to.eql(429));",
+                  "    pm.test(\"Error message returned\", () => {",
+                  "      const body = res.json();",
+                  "      pm.expect(body.success).to.be.false;",
+                  "      pm.expect(body.message).to.include(\"15 minutes\");",
+                  "    });",
+                  "    pm.test(\"Retry-After header sent\", () => pm.expect(res.headers.has(\"Retry-After\")).to.be.true);",
+                  "    console.log(`${attempts} extra request(s) needed to hit the limit`);",
+                  "  });",
+                  "};",
+                  "fire();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gigs",
+            "description": "Brute-force protection: after 10 failed logins in 15 minutes the IP gets 429. Successful logins are not counted (skipSuccessfulRequests)."
+          }
+        },
+        {
+          "name": "2.4 Correct password also blocked while limited (429)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 429\", () => pm.response.to.have.status(429));",
+                  "pm.test(\"No token issued\", () => pm.expect(pm.response.json().token).to.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "description": "Once the limit is hit, the attacker cannot keep guessing even if the next guess would be correct.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"freelancerA{{runId}}@test.com\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

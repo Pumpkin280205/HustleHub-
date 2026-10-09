@@ -1,16 +1,14 @@
+
 const Joi = require('joi');
 const xss = require('xss');
 
 const registerSchema = Joi.object({
-    email: Joi.string()
-        .email()
-        .required(),
+    email: Joi.string().email().required(),
 
     password: Joi.string()
         .min(8)
-        // bcrypt ignores everything after 72 bytes, so longer passwords are rejected
         .max(72, 'utf8')
-        .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$'))
+        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/)
         .required()
         .messages({
             'string.min': 'Password must be at least 8 characters long',
@@ -28,37 +26,27 @@ const registerSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-    email: Joi.string()
-        .email()
-        .required(),
-
-    password: Joi.string()
-        .required()
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
 });
 
-const GIG_CATEGORIES = ['Design', 'Writing', 'Development', 'Marketing', 'Video & Animation', 'Music & Audio', 'Business', 'Other'];
+const GIG_CATEGORIES = [
+    'Design', 'Writing', 'Development', 'Marketing',
+    'Video & Animation', 'Music & Audio', 'Business', 'Other'
+];
 
 const gigCreateSchema = Joi.object({
-    title: Joi.string()
-        .trim()
-        .min(3)
-        .max(100)
-        .required(),
+    title: Joi.string().trim().min(3).max(100).required(),
+    description: Joi.string().trim().min(10).max(2000).required(),
 
-    description: Joi.string()
-        .trim()
-        .min(10)
-        .max(2000)
-        .required(),
-
-        category: Joi.string()
+    category: Joi.string()
         .valid(...GIG_CATEGORIES)
         .required()
         .messages({
             'any.only': 'Choose a valid category'
         }),
 
-        price: Joi.number()
+    price: Joi.number()
         .min(1)
         .precision(2)
         .max(1000000)
@@ -66,52 +54,53 @@ const gigCreateSchema = Joi.object({
         .messages({
             'number.min': 'Price must be at least R1'
         })
-
 });
 
-// Same rules as create, but every field is optional and at least one must be sent
 const gigUpdateSchema = gigCreateSchema
-    .fork(['title', 'description', 'category', 'price'], (field) => field.optional())
+    .fork(['title', 'description', 'category', 'price'], field => field.optional())
     .min(1)
     .messages({
         'object.min': 'At least one field must be provided to update'
     });
 
-const validate = (schema) => {
-    return (req, res, next) => {
-        const { error, value } = schema.validate(req.body, {
-            abortEarly: false,
-            stripUnknown: true
-        });
-
-        if (error) {
-            return res.status(400).json({
-                success: false,
-                message: 'Validation failed',
-                errors: error.details.map(detail => ({
-                    field: detail.path.join('.'),
-                    message: detail.message
-                }))
-            });
-        }
-
-        // Replace the body with the cleaned value so unknown fields
-        // (e.g. a spoofed "freelancer" id) never reach the controllers
-       req.body = Object.fromEntries(
-    Object.entries(value).map(([key, val]) => {
-        if (typeof val === 'string') {
-            return [key, xss(val.trim())];
-        }
-
-        return [key, val];
-    })
-);
-
-        next();
-    };
+const xssOptions = {
+    whiteList: {},
+    stripIgnoreTag: true,
+    stripIgnoreTagBody: ['script', 'style']
 };
 
-// MongoDB ObjectIds are 24 hex characters; reject anything else before it reaches the database
+// Passwords must reach bcrypt exactly as typed.
+const NEVER_SANITISE = ['password'];
+
+const sanitiseBody = (body = {}) => Object.fromEntries(
+    Object.entries(body).map(([key, val]) =>
+        typeof val === 'string' && !NEVER_SANITISE.includes(key)
+            ? [key, xss(val, xssOptions).trim()]
+            : [key, val]
+    )
+);
+
+const validate = schema => (req, res, next) => {
+    const { error, value } = schema.validate(sanitiseBody(req.body), {
+        abortEarly: false,
+        stripUnknown: true
+    });
+
+    if (error) {
+        return res.status(400).json({
+            success: false,
+            message: 'Validation failed',
+            errors: error.details.map(detail => ({
+                field: detail.path.join('.'),
+                message: detail.message
+            }))
+        });
+    }
+
+    req.body = value;
+    next();
+};
+
 const validateObjectId = (req, res, next) => {
     if (!/^[a-f\d]{24}$/i.test(req.params.id)) {
         return res.status(400).json({
@@ -134,19 +123,11 @@ const bookingCreateSchema = Joi.object({
         })
 });
 
-const validateBookingCreate = validate(bookingCreateSchema);
-
-
-const validateRegister = validate(registerSchema);
-const validateLogin = validate(loginSchema);
-const validateGigCreate = validate(gigCreateSchema);
-const validateGigUpdate = validate(gigUpdateSchema);
-
 module.exports = {
-    validateRegister,
-    validateLogin,
-    validateGigCreate,
-    validateGigUpdate,
+    validateRegister: validate(registerSchema),
+    validateLogin: validate(loginSchema),
+    validateGigCreate: validate(gigCreateSchema),
+    validateGigUpdate: validate(gigUpdateSchema),
     validateObjectId,
-    validateBookingCreate
+    validateBookingCreate: validate(bookingCreateSchema)
 };

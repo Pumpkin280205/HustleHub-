@@ -1,8 +1,14 @@
+
 const express = require('express');
 const router = express.Router();
 
 const authenticateToken = require('../middleware/authMiddleware');
 const authorizeRoles = require('../middleware/roleMiddleware');
+const {
+    validateBookingCreate,
+    validateObjectId
+} = require('../middleware/validationMiddleware');
+const { bookingLimiter } = require('../middleware/rateLimiters');
 
 const {
 validateBookingCreate,
@@ -15,6 +21,15 @@ const c = require('../controllers/bookingController');
 // All booking routes require authentication.
 router.use(authenticateToken);
 
+router.post(
+    '/',
+    authorizeRoles('client'),
+    bookingLimiter,
+    validateBookingCreate,
+    c.createBooking
+);
+
+router.get('/mine', c.getMyBookings);
 // Only clients can create bookings.
 router.post(
 '/',

@@ -10,16 +10,9 @@ const {
     validateLogin
 } = require('../middleware/validationMiddleware');
 
-const {
-    loginLimiter,
-    registerLimiter
-} = require('../middleware/rateLimitMiddleware');
-
-// Registration: limit repeated registration attempts.
-router.post('/register', registerLimiter, validateRegister, register);
-
-// Login: limit repeated login attempts.
-router.post('/login', loginLimiter, validateLogin, login);
+// Both routes are rate limited by authLimiter in app.js (failed attempts only).
+router.post('/register', validateRegister, register);
+router.post('/login', validateLogin, login);
 
 // Protected route: requires a valid authentication token.
 router.get('/protected', authenticateToken, (req, res) => {

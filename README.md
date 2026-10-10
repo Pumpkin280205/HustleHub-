@@ -566,60 +566,22 @@ Screenshots are stored in `docs/screenshots/`.
 
 ## Reference list
 
-Express.js (n.d.) *Production best practices: security*. Available at: https://expressjs.com/en/advanced/best-practice-security/ (Accessed: 10 October 2026).
+Express.js, *Production best practices: security*. [online] Available at: \<https://expressjs.com/en/advanced/best-practice-security/\> [Accessed 5th October 2026].
 
-express-rate-limit (n.d.) *express-rate-limit: basic rate-limiting middleware for the Express web server*. Available at: https://github.com/express-rate-limit/express-rate-limit (Accessed: 10 October 2026).
+Helmet.js, *Helmet*. [online] Available at: \<https://helmet.js.org/\> [Accessed 5th October 2026].
 
-Helmet.js (n.d.) *Helmet*. Available at: https://helmet.js.org/ (Accessed: 10 October 2026).
+Joi, *API documentation*. [online] Available at: \<https://joi.dev/api/18.x.x\> [Accessed 6th October 2026].
 
-Joi (n.d.) *API documentation*. Available at: https://joi.dev/api/18.x.x (Accessed: 10 October 2026).
+Jones, M., Bradley, J. and Sakimura, N., 2015. *JSON Web Token (JWT), RFC 7519*. [online] Available at: \<https://datatracker.ietf.org/doc/rfc7519/\> [Accessed 9th October 2026].
 
-Jones, M., Bradley, J. and Sakimura, N. (2015) *JSON Web Token (JWT), RFC 7519*. Available at: https://datatracker.ietf.org/doc/rfc7519/ (Accessed: 10 October 2026).
+MongoDB, *Security*. [online] Available at: \<https://www.mongodb.com/docs/v8.0/security/\> [Accessed 9th October 2026].
 
-Lei, Z. (n.d.) *js-xss: sanitize untrusted HTML (to prevent XSS) with a configuration specified by a whitelist*. Available at: https://github.com/leizongmin/js-xss (Accessed: 10 October 2026).
+Mongoose, *Getting started*. [online] Available at: \<https://mongoosejs.com/docs/\> [Accessed 6th October 2026].
 
-MDN Web Docs (n.d.a) *Content Security Policy (CSP)*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP (Accessed: 10 October 2026).
+Node.js, *About Node.js*. [online] Available at: \<https://nodejs.org/en/about\> [Accessed 6th October 2026].
 
-MDN Web Docs (n.d.b) *Transport Layer Security (TLS)*. Available at: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security (Accessed: 10 October 2026).
+Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/preview-options\> [Accessed 7th October 2026].
 
-MDN Web Docs (n.d.c) *Window: sessionStorage property*. Available at: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage (Accessed: 10 October 2026).
+Vite, *Server options*. [online] Available at: \<https://vite.dev/config/server-options\> [Accessed 8th October 2026].
 
-MongoDB (n.d.) *Security*. Available at: https://www.mongodb.com/docs/v8.0/security/ (Accessed: 10 October 2026).
-
-Mongoose (n.d.) *Getting started*. Available at: https://mongoosejs.com/docs/ (Accessed: 10 October 2026).
-
-Node.js (n.d.) *About Node.js*. Available at: https://nodejs.org/en/about (Accessed: 10 October 2026).
-
-OWASP Foundation (2021) *A01:2021 – Broken Access Control*. Available at: https://top10.owasp.org/2021/A01_2021-Broken_Access_Control/ (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.a) *Authentication cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.b) *Authorization cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.c) *Cross site scripting prevention cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.d) *HTTP headers cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.e) *Input validation cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.f) *Mass assignment cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Mass_Assignment_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.g) *Insecure direct object reference prevention cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-OWASP Foundation (n.d.h) *Password storage cheat sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html (Accessed: 10 October 2026).
-
-Postman (n.d.a) *What is API testing? A guide to testing APIs*. Available at: https://www.postman.com/api-platform/api-testing/ (Accessed: 10 October 2026).
-
-Postman (n.d.b) *Run and test collections from the command line using Newman CLI*. Available at: https://learning.postman.com/docs/reference/newman-cli/command-line-integration-with-newman/ (Accessed: 10 October 2026).
-
-React (n.d.) *React*. Available at: https://react.dev/ (Accessed: 10 October 2026).
-
-Testing Library (n.d.a) *React Testing Library*. Available at: https://testing-library.com/docs/react-testing-library/intro/ (Accessed: 10 October 2026).
-
-Testing Library (n.d.b) *User Event: introduction*. Available at: https://testing-library.com/docs/user-event/intro/ (Accessed: 10 October 2026).
-
-Vite (n.d.a) *Preview options*. Available at: https://vite.dev/config/preview-options (Accessed: 10 October 2026).
-
-Vite (n.d.b) *Server options*. Available at: https://vite.dev/config/server-options (Accessed: 10 October 2026).
-
-Vitest (n.d.) *Getting started*. Available at: https://vitest.dev/guide/ (Accessed: 10 October 2026).
+Vitest, *Getting started*. [online] Available at: \<https://vitest.dev/guide/\> [Accessed 10th October 2026].

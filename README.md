@@ -496,9 +496,23 @@ The complete flow was also tested in the browser: registration and login validat
 
 ### 12.1 Part 2: Postman test runs
 
-<img width="1531" height="871" alt="Screenshot 2026-10-11 011922" src="https://github.com/user-attachments/assets/8c579f2f-8dbd-4385-90eb-71e0391b9886" />
-
-
+<img width="1517" height="852" alt="Screenshot 2026-10-11 011538" src="https://github.com/user-attachments/assets/fcc6b369-6661-4809-8110-8e20278e0591" />
+<img width="757" height="266" alt="Screenshot 2026-10-11 011451" src="https://github.com/user-attachments/assets/83b5447d-6aa4-49e6-92b2-660cabd06922" />
+<img width="757" height="280" alt="Screenshot 2026-10-11 011434" src="https://github.com/user-attachments/assets/6da55191-92a1-4c56-90c3-518c3bf1f2ab" />
+<img width="1527" height="591" alt="Screenshot 2026-10-11 011106" src="https://github.com/user-attachments/assets/c7e238b5-ff77-46f5-a96b-12edf74889a4" />
+<img width="755" height="575" alt="Screenshot 2026-10-11 012634" src="https://github.com/user-attachments/assets/fa2c0358-82df-43e0-b36b-b0f749591337" />
+<img width="746" height="717" alt="Screenshot 2026-10-11 012619" src="https://github.com/user-attachments/assets/329598cb-c077-47f2-8914-6636b321a903" />
+<img width="756" height="727" alt="Screenshot 2026-10-11 012611" src="https://github.com/user-attachments/assets/e37897a5-9855-4b26-8d8c-d2d91953a3cf" />
+<img width="1537" height="892" alt="Screenshot 2026-10-11 012216" src="https://github.com/user-attachments/assets/13bc93ed-fc32-4b88-988e-b40470f35fab" />
+<img width="1532" height="847" alt="Screenshot 2026-10-11 012137" src="https://github.com/user-attachments/assets/89f1094c-a647-4c2b-a19f-7e1519ad738e" />
+<img width="1528" height="572" alt="Screenshot 2026-10-11 012121" src="https://github.com/user-attachments/assets/b27bf536-32d6-47c1-b7d3-a224543f45c9" />
+<img width="1526" height="857" alt="Screenshot 2026-10-11 012059" src="https://github.com/user-attachments/assets/d71001d3-8976-4397-b379-2a83a1d0e83b" />
+<img width="1527" height="621" alt="Screenshot 2026-10-11 011950" src="https://github.com/user-attachments/assets/6d0bb783-094a-4bca-a4c1-bc380052a955" />
+<img width="1531" height="871" alt="Screenshot 2026-10-11 011922" src="https://github.com/user-attachments/assets/72e4349b-9145-4ace-b596-8a5e74a0fe74" />
+<img width="1528" height="887" alt="Screenshot 2026-10-11 011902" src="https://github.com/user-attachments/assets/14837e91-48f5-4c50-84e3-77f33d2be56c" />
+<img width="1527" height="772" alt="Screenshot 2026-10-11 011750" src="https://github.com/user-attachments/assets/e52cd149-8b55-45d0-b4ae-3c7d6d4523ff" />
+<img width="1521" height="841" alt="Screenshot 2026-10-11 011645" src="https://github.com/user-attachments/assets/d453375d-f358-4e58-bef8-53054ae63e4a" />
+<img width="1522" height="716" alt="Screenshot 2026-10-11 011603" src="https://github.com/user-attachments/assets/d86520ee-1a53-4831-a07f-4fc7d54baa39" />
 <img width="1600" height="1000" alt="Part 1 Postman evidence" src="https://github.com/user-attachments/assets/fa122d3b-cfe1-4446-a86d-c59ba0cc50b7" />
 
 <img width="1600" height="1000" alt="Part 1 Postman evidence" src="https://github.com/user-attachments/assets/3e560625-c884-4c8d-8363-b1869fc1a69a" />

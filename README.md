@@ -494,38 +494,92 @@ The complete flow was also tested in the browser: registration and login validat
 
 ## 12. Evidence
 
-### 12.1 Part 2
+### 12.1 Part 2: Postman test runs
 
-Screenshots are stored in `docs/screenshots/`.
+Screenshots are stored in `docs/screenshots/`. The request numbers (for example 5.5) match the requests in the Postman collections.
+
+**Figure 1: Main collection (HustleHub - Gigs) run in the Postman Collection Runner: 148 tests passed, 0 failed.** This run was made without admin credentials, so the admin-only requests were skipped; with credentials supplied, the run contains 159 tests.
+
+![Figure 1: HustleHub - Gigs collection run, 148 passed, 0 failed](docs/screenshots/01-postman-gigs-run.png)
+
+**Figure 2: Rate-limit collection (HustleHub - Rate Limits) run: 22 tests passed, 0 failed.** The collection registers fresh test users, then triggers the booking and login rate limiters and checks the 429 responses.
+
+![Figure 2: HustleHub - Rate Limits collection run, 22 passed, 0 failed](docs/screenshots/02-postman-rate-limits-run.png)
+
+### 12.2 Part 2: Postman request evidence
+
+**Figure 3: Request 2.1, a freelancer creates a gig (201 Created).** The response shows the new gig with the `freelancer` id taken from the freelancer's JWT, not from the request body.
+
+![Figure 3: Request 2.1, freelancer creates a gig, 201 Created](docs/screenshots/03-postman-2-1-create-gig.png)
+
+**Figure 4: Request 2.4, a client tries to create a gig (403 Forbidden).** Role-based access control: only freelancers may create gigs, so the valid request from a client account is rejected.
+
+![Figure 4: Request 2.4, client cannot create a gig, 403 Forbidden](docs/screenshots/04-postman-2-4-client-create-403.png)
+
+**Figure 5: Request 2.5, creating a gig without a token (401 Unauthorized).** Protected routes require a valid JWT; the request is rejected with "Access token required".
+
+![Figure 5: Request 2.5, no token, 401 Unauthorized](docs/screenshots/05-postman-2-5-no-token-401.png)
+
+**Figure 6: Request 1.7, public registration as an admin (400 Bad Request).** The role field only accepts `client` or `freelancer`, so nobody can grant themselves admin rights through registration.
+
+![Figure 6: Request 1.7, registering as admin is rejected, 400 Bad Request](docs/screenshots/06-postman-1-7-register-admin-400.png)
+
+**Figure 7: Request 5.5, freelancer B tries to update freelancer A's gig (403 Forbidden).** The ownership check rejects the request with "You do not own this gig", preventing insecure direct object reference.
+
+![Figure 7: Request 5.5, freelancer cannot update another freelancer's gig, 403 Forbidden](docs/screenshots/07-postman-5-5-not-owner-403.png)
+
+**Figure 8: Request 9.2, a freelancer tries to list all users (403 Forbidden).** The admin routes are restricted to the admin role.
+
+![Figure 8: Request 9.2, freelancer cannot use admin route, 403 Forbidden](docs/screenshots/08-postman-9-2-admin-only-403.png)
+
+**Figure 9: Request 3.4, creating a gig with a text price (400 Bad Request).** Joi validation rejects the request and returns a per-field error for `price`.
+
+![Figure 9: Request 3.4, invalid price type rejected, 400 Bad Request](docs/screenshots/09-postman-3-4-invalid-price-400.png)
+
+**Figure 10: Request 3.9, gig title containing a script tag (201 Created, tag removed).** The request title `<script>alert(1)</script> Logo design` is sanitised before validation and stored as `Logo design`; all four tests pass.
+
+![Figure 10: Request 3.9, script tag stripped from gig title](docs/screenshots/10-postman-3-9-xss-stripped.png)
+
+**Figure 11: Request 4.1, a client browses all gigs (200 OK).** Each gig returns only the freelancer's id, so no freelancer email addresses or password hashes are exposed.
+
+![Figure 11: Request 4.1, client browses gigs, 200 OK](docs/screenshots/11-postman-4-1-browse-gigs.png)
+
+**Figure 12: Request 7.1, a client books freelancer B's gig (201 Created).** The booking is confirmed at the gig's price of R300 and a linked transaction is created for the simulated payment, with the same booking id, currency ZAR, payment method `simulated`, status `completed` and a unique `TXN-` reference.
+
+![Figure 12: Request 7.1, booking creates a linked transaction, 201 Created](docs/screenshots/12-postman-7-1-booking-transaction.png)
+
+**Figure 13: Request 7.2, a client sends a tampered amount and freelancer (201 Created).** The request body sets `"amount": 1` and freelancer A's id, but the server ignores both: the booking and transaction are recorded at the real gig price of R300 and linked to the gig's actual owner, freelancer B.
+
+![Figure 13: Request 7.2, client-supplied amount and freelancer are ignored](docs/screenshots/13-postman-7-2-tampered-amount.png)
+
+**Figure 14: Request 8.1, freelancer B's income summary (200 OK).** The two bookings from requests 7.1 and 7.2 at R300 each give a total income of R600, 2 bookings, an average of R300 per booking and R600 this month, with a monthly breakdown. Income is calculated from the freelancer's own completed transactions.
+
+![Figure 14: Request 8.1, freelancer income summary, 200 OK](docs/screenshots/14-postman-8-1-income.png)
+
+### 12.3 Part 2: Frontend tests and application
 
 | Figure | Shows |
 | --- | --- |
-| Figure 1 | Newman run of the main collection: 159 assertions, 0 failed |
-| Figure 2 | Newman run of the rate-limit collection, including a 429 response |
-| Figure 3 | Frontend test run: 17 tests passed |
-| Figure 4 | Browse gigs page |
-| Figure 5 | Booking confirmation with transaction reference |
-| Figure 6 | My Bookings: bookings and transactions |
-| Figure 7 | Freelancer dashboard with income summary |
-| Figure 8 | Registration validation errors |
+| Figure 15 | Frontend test run: 17 tests passed |
+| Figure 16 | Browse gigs page |
+| Figure 17 | Booking confirmation with transaction reference |
+| Figure 18 | My Bookings: bookings and transactions |
+| Figure 19 | Freelancer dashboard with income summary |
+| Figure 20 | Registration validation errors |
 
-![Figure 1: Newman main collection results](docs/screenshots/01-newman-main.png)
+![Figure 15: Frontend tests passing](docs/screenshots/15-frontend-tests.png)
 
-![Figure 2: Newman rate-limit collection results](docs/screenshots/02-newman-rate-limits.png)
+![Figure 16: Browse gigs](docs/screenshots/16-browse-gigs.png)
 
-![Figure 3: Frontend tests passing](docs/screenshots/03-frontend-tests.png)
+![Figure 17: Booking confirmation](docs/screenshots/17-booking-confirmation.png)
 
-![Figure 4: Browse gigs](docs/screenshots/04-browse-gigs.png)
+![Figure 18: My Bookings](docs/screenshots/18-my-bookings.png)
 
-![Figure 5: Booking confirmation](docs/screenshots/05-booking-confirmation.png)
+![Figure 19: Freelancer dashboard](docs/screenshots/19-freelancer-dashboard.png)
 
-![Figure 6: My Bookings](docs/screenshots/06-my-bookings.png)
+![Figure 20: Registration validation](docs/screenshots/20-register-validation.png)
 
-![Figure 7: Freelancer dashboard](docs/screenshots/07-freelancer-dashboard.png)
-
-![Figure 8: Registration validation](docs/screenshots/08-register-validation.png)
-
-### 12.2 Part 1 (Postman, registration and login)
+### 12.4 Part 1 (Postman, registration and login)
 
 <img width="1600" height="1000" alt="Part 1 Postman evidence" src="https://github.com/user-attachments/assets/fa122d3b-cfe1-4446-a86d-c59ba0cc50b7" />
 

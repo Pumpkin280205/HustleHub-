@@ -24,7 +24,7 @@ const securityHeaders = {
 export default defineConfig({
   plugins: [react()],
 
-  // Development server: the CSP is report-only because Vite injects an inline
+  // Development server: CSP is report-only because Vite injects an inline
   // script for React hot reloading, which script-src 'self' would block.
   server: {
     port: 5173,
@@ -44,5 +44,11 @@ export default defineConfig({
       'Content-Security-Policy': csp,
       ...securityHeaders,
     },
+  },
+
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    globals: true,
   },
 });

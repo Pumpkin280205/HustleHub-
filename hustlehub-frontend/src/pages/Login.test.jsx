@@ -1,9 +1,28 @@
+
+//Login Page Automated Tests
+// Testing tools:
+// Vitest: Used as the test runner and for assertions/mocking.
+// React Testing Library: Used to render the Login component and query elements displayed to the user.
+// User Event: Used to simulate user interactions such as typing and clicking.
+ 
+ //References:
+// Vitest (2026). Getting Started.
+// https://vitest.dev/guide/
+ 
+//Testing Library (2026). React Testing Library.
+// https://testing-library.com/docs/react-testing-library/intro/
+
+// Testing Library (2026). User Event.
+// https://testing-library.com/docs/user-event/intro/
+
+
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import Login from './Login';
 
+// Mock the authentication context so that the Login component can be tested independently without requiring a real logged-in user.
 vi.mock('../context/useAuth', () => ({
   useAuth: () => ({
     user: null,
@@ -11,6 +30,7 @@ vi.mock('../context/useAuth', () => ({
   })
 }));
 
+// Mock the API client to prevent the automated tests from sending real HTTP requests to the backend.
 vi.mock('../api/client', () => ({
   default: {
     post: vi.fn()
@@ -18,6 +38,7 @@ vi.mock('../api/client', () => ({
   getErrorMessage: vi.fn(),
   getFieldErrors: vi.fn()
 }));
+
 
 function renderLogin() {
   return render(
@@ -28,6 +49,8 @@ function renderLogin() {
 }
 
 describe('Login page', () => {
+
+  // Test 1: Verifies that the main login form elements are rendered correctly for the user.
   it('renders the login form', () => {
     renderLogin();
 
@@ -48,6 +71,7 @@ describe('Login page', () => {
     ).toBeInTheDocument();
   });
 
+  // Test 2: Verifies user interaction by checking that a user can enter an email address and password.
   it('allows the user to enter email and password', async () => {
     const user = userEvent.setup();
 
@@ -63,6 +87,7 @@ describe('Login page', () => {
     expect(passwordInput).toHaveValue('StrongPass1!');
   });
 
+  // Test 3: Verifies the client-side validation behaviour when the login form is submitted without any input.
   it('shows validation errors when an empty form is submitted', async () => {
     const user = userEvent.setup();
 
@@ -79,5 +104,30 @@ describe('Login page', () => {
     expect(
       await screen.findByText(/password/i, { selector: '.field-error' })
     ).toBeInTheDocument();
+  });
+
+  // Test 4: Verifies that invalid login input is rejected by client-side validation before an API request is made.
+  it('does not call the login API when invalid input is submitted', async () => {
+    const user = userEvent.setup();
+
+    renderLogin();
+
+    await user.type(
+      screen.getByLabelText(/email/i),
+      'invalid-email'
+    );
+
+    await user.type(
+      screen.getByLabelText(/password/i),
+      '123'
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: /log in/i })
+    );
+
+    const api = await import('../api/client');
+
+    expect(api.default.post).not.toHaveBeenCalled();
   });
 });

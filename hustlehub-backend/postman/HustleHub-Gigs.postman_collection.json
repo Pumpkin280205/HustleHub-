@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "HustleHub - Gigs",
-    "description": "Auth setup and gig CRUD tests for HustleHub+ (Part 2, requirement 1). Run top to bottom.",
+    "description": "Security and functional tests for HustleHub+ (Part 2): auth, gigs, bookings, transactions, income, admin access, input sanitisation and security headers. Run top to bottom. Safe to re-run as often as you like.\n\nAdmin tests are skipped unless adminEmail and adminPassword are set (from `npm run seed:admin`). In Postman, set them as Current values only (do not commit them). With Newman, pass them on the command line:\n`npx newman run postman/HustleHub-Gigs.postman_collection.json --insecure --env-var adminEmail=... --env-var adminPassword=...`\n\nRate-limit tests are in the separate HustleHub-RateLimits collection, because they lock the auth limiter for 15 minutes.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -59,6 +59,18 @@
     },
     {
       "key": "userIdClient",
+      "value": ""
+    },
+    {
+      "key": "adminEmail",
+      "value": ""
+    },
+    {
+      "key": "adminPassword",
+      "value": ""
+    },
+    {
+      "key": "tokenAdmin",
       "value": ""
     }
   ],
@@ -297,6 +309,96 @@
               }
             },
             "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "1.7 Public register as admin is rejected (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error is on the role field\", () =>",
+                  "  pm.expect(pm.response.json().errors.map(e => e.field)).to.include(\"role\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"fakeadmin{{runId}}@test.com\",\n  \"password\": \"{{password}}\",\n  \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.8 Login admin",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"tokenAdmin\", \"\");",
+                  "if (!pm.variables.get(\"adminEmail\") || !pm.variables.get(\"adminPassword\")) {",
+                  "  console.log(\"Skipped: set adminEmail and adminPassword (from npm run seed:admin) to run admin tests\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeds\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Role is admin\", () => pm.expect(pm.response.json().role).to.eql(\"admin\"));",
+                  "pm.collectionVariables.set(\"tokenAdmin\", pm.response.json().token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "description": "The admin account is created by `npm run seed:admin`, never through /auth/register.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           }
         }
       ]
@@ -930,18 +1032,19 @@
           }
         },
         {
-          "name": "3.9 Script tag in title (no server error)",
+          "name": "3.9 Script tag in title is stripped",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Handled without a server error\", () => pm.expect(pm.response.code).to.be.oneOf([201, 400]));",
-                  "if (pm.response.code === 201) {",
-                  "  console.log(\"3.9: script tag was accepted - input sanitisation (Part 2 requirement 7) should strip or reject it\");",
-                  "  pm.collectionVariables.set(\"xssGig\", pm.response.json().gig._id);",
-                  "}"
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const gig = pm.response.json().gig;",
+                  "pm.test(\"Script tag removed from title\", () => pm.expect(gig.title).to.not.include(\"<script\"));",
+                  "pm.test(\"Script body removed from title\", () => pm.expect(gig.title).to.not.include(\"alert\"));",
+                  "pm.test(\"Plain text kept\", () => pm.expect(gig.title).to.eql(\"Logo design\"));",
+                  "pm.collectionVariables.set(\"xssGig\", gig._id);"
                 ]
               }
             }
@@ -965,10 +1068,216 @@
               }
             ],
             "url": "{{baseUrl}}/gigs",
-            "description": "Currently accepted with 201 because sanitisation is not in place yet (Part 2 requirement 7). Once sanitisation is added, tighten this test to expect 400 or a stripped title.",
+            "description": "The validation middleware runs xss() over every string field before Joi validates it, so the <script> block is removed and only the plain text is stored.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"<script>alert(1)</script> Logo design\",\n  \"description\": \"I will design a professional logo for your brand\",\n  \"category\": \"Design\",\n  \"price\": 500\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.10 Event handler in description is stripped",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const gig = pm.response.json().gig;",
+                  "pm.test(\"img tag and onerror removed\", () => {",
+                  "  pm.expect(gig.description).to.not.include(\"<img\");",
+                  "  pm.expect(gig.description).to.not.include(\"onerror\");",
+                  "});",
+                  "pm.test(\"Plain text kept\", () => pm.expect(gig.description).to.eql(\"I will design a professional banner\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/gigs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Banner design\",\n  \"description\": \"<img src=x onerror=alert(1)>I will design a professional banner\",\n  \"category\": \"Design\",\n  \"price\": 400\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.11 Title that is only a script tag (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Error is on the title field\", () =>",
+                  "  pm.expect(pm.response.json().errors.map(e => e.field)).to.include(\"title\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/gigs",
+            "description": "Sanitisation runs before validation, so the title is empty after the script is stripped and fails the required/min rules.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"<script>alert(1)</script>\",\n  \"description\": \"I will design a professional logo for your brand\",\n  \"category\": \"Design\",\n  \"price\": 500\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.12 Register with HTML characters in password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Registered\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "description": "Passwords are excluded from XSS sanitisation so they reach bcrypt exactly as typed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"htmlpw{{runId}}@test.com\",\n  \"password\": \"Passw0rd!<b>x</b>\",\n  \"role\": \"client\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.13 Login with exact HTML password succeeds",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeds\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a token\", () => pm.expect(pm.response.json().token).to.be.a(\"string\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"htmlpw{{runId}}@test.com\",\n  \"password\": \"Passw0rd!<b>x</b>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.14 Login with sanitised password fails (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "description": "\"Passw0rd!x\" is what xss() would turn the real password into. Rejecting it proves the stored hash was made from the unmodified password.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"htmlpw{{runId}}@test.com\",\n  \"password\": \"Passw0rd!x\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2724,6 +3033,442 @@
                 }
               }
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9 - Admin",
+      "item": [
+        {
+          "name": "9.1 Admin lists all users",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get(\"tokenAdmin\")) {",
+                  "  console.log(\"Skipped: set adminEmail and adminPassword (from npm run seed:admin) to run admin tests\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Count matches users returned\", () => pm.expect(body.count).to.eql(body.users.length));",
+                  "pm.test(\"Includes users from this run\", () =>",
+                  "  pm.expect(body.users.map(u => u.email)).to.include(`freelancera${pm.collectionVariables.get(\"runId\")}@test.com`));",
+                  "pm.test(\"No password hashes exposed\", () =>",
+                  "  body.users.forEach(u => pm.expect(u).to.not.have.property(\"password\")));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/users"
+          }
+        },
+        {
+          "name": "9.2 Freelancer cannot list users (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/users"
+          }
+        },
+        {
+          "name": "9.3 Client cannot list users (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/users"
+          }
+        },
+        {
+          "name": "9.4 No token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/users"
+          }
+        },
+        {
+          "name": "9.5 Freelancer cannot use admin gig delete (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/admin/gigs/{{gigB}}"
+          }
+        },
+        {
+          "name": "9.6 Client cannot use admin gig delete (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/admin/gigs/{{gigB}}"
+          }
+        },
+        {
+          "name": "9.7 Admin delete with invalid id (400)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get(\"tokenAdmin\")) {",
+                  "  console.log(\"Skipped: set adminEmail and adminPassword (from npm run seed:admin) to run admin tests\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/admin/gigs/abc"
+          }
+        },
+        {
+          "name": "9.8 Admin delete non-existent gig (404)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get(\"tokenAdmin\")) {",
+                  "  console.log(\"Skipped: set adminEmail and adminPassword (from npm run seed:admin) to run admin tests\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/admin/gigs/000000000000000000000000"
+          }
+        },
+        {
+          "name": "9.9 Admin removes freelancer A's gig",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get(\"tokenAdmin\")) {",
+                  "  console.log(\"Skipped: set adminEmail and adminPassword (from npm run seed:admin) to run admin tests\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Success message\", () => pm.expect(pm.response.json().message).to.eql(\"Gig removed by admin\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/admin/gigs/{{xssGig}}"
+          }
+        },
+        {
+          "name": "9.10 Removed gig is gone (404)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get(\"tokenAdmin\")) {",
+                  "  console.log(\"Skipped: set adminEmail and adminPassword (from npm run seed:admin) to run admin tests\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gigs/{{xssGig}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Security Headers",
+      "item": [
+        {
+          "name": "10.1 Helmet headers present",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Content-Security-Policy set\", () => {",
+                  "  const csp = pm.response.headers.get(\"Content-Security-Policy\");",
+                  "  pm.expect(csp).to.include(\"default-src 'self'\");",
+                  "  pm.expect(csp).to.include(\"object-src 'none'\");",
+                  "});",
+                  "pm.test(\"X-Content-Type-Options is nosniff\", () =>",
+                  "  pm.expect(pm.response.headers.get(\"X-Content-Type-Options\")).to.eql(\"nosniff\"));",
+                  "pm.test(\"X-Frame-Options set\", () =>",
+                  "  pm.expect(pm.response.headers.get(\"X-Frame-Options\")).to.eql(\"SAMEORIGIN\"));",
+                  "pm.test(\"Strict-Transport-Security set\", () =>",
+                  "  pm.expect(pm.response.headers.get(\"Strict-Transport-Security\")).to.include(\"max-age=\"));",
+                  "pm.test(\"X-Powered-By hidden\", () =>",
+                  "  pm.expect(pm.response.headers.has(\"X-Powered-By\")).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gigs"
+          }
+        },
+        {
+          "name": "10.2 Rate limit headers use the standard format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RateLimit-Policy header present\", () =>",
+                  "  pm.expect(pm.response.headers.has(\"RateLimit-Policy\")).to.be.true);",
+                  "pm.test(\"RateLimit header present\", () =>",
+                  "  pm.expect(pm.response.headers.has(\"RateLimit\")).to.be.true);",
+                  "pm.test(\"Legacy X-RateLimit headers disabled\", () =>",
+                  "  pm.expect(pm.response.headers.has(\"X-RateLimit-Limit\")).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenClient}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gigs"
           }
         }
       ]

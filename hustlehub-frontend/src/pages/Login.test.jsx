@@ -1,10 +1,3 @@
-
-//Login Page Automated Tests
-// Testing tools:
-// Vitest: Used as the test runner and for assertions/mocking.
-// React Testing Library: Used to render the Login component and query elements displayed to the user.
-// User Event: Used to simulate user interactions such as typing and clicking.
- 
  //References:
 // Vitest (2026). Getting Started.
 // https://vitest.dev/guide/
@@ -129,5 +122,28 @@ describe('Login page', () => {
     const api = await import('../api/client');
 
     expect(api.default.post).not.toHaveBeenCalled();
+  });
+
+  // Test 5: Verifies that valid input is sent to the login API, with the email trimmed and lowercased.
+  it('calls the login API with the cleaned email when valid input is submitted', async () => {
+    const user = userEvent.setup();
+    const api = await import('../api/client');
+
+    api.default.post.mockClear();
+    api.default.post.mockResolvedValueOnce({
+      data: { token: 'test-token', email: 'iqra@example.com', role: 'client' }
+    });
+
+    renderLogin();
+
+    await user.type(screen.getByLabelText(/email/i), '  Iqra@Example.com ');
+    await user.type(screen.getByLabelText(/password/i), 'StrongPass1!');
+    await user.click(screen.getByRole('button', { name: /log in/i }));
+
+    expect(api.default.post).toHaveBeenCalledTimes(1);
+    expect(api.default.post).toHaveBeenCalledWith('/auth/login', {
+      email: 'iqra@example.com',
+      password: 'StrongPass1!'
+    });
   });
 });

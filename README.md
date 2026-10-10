@@ -60,7 +60,7 @@ HustleHub+ processes user credentials, bookings, financial transactions and inco
 
 ## 3. System architecture
 
-HustleHub+ is a three-tier MERN application: a React single-page application (presentation), a Node.js and Express REST API (application and security logic), and MongoDB Atlas (data) (React, n.d.; Node.js, n.d.; Express.js, n.d.; MongoDB, n.d.). The diagram shows the system boundaries and where each security control is applied.
+HustleHub+ is a three-tier MERN application: a React single-page application (presentation), a Node.js and Express REST API (application and security logic), and MongoDB Atlas (data) (Node.js; Express.js; MongoDB). The diagram shows the system boundaries and where each security control is applied.
 
 ```mermaid
 flowchart TB
@@ -106,13 +106,13 @@ flowchart TB
 
 | Layer | Technology | Purpose |
 | --- | --- | --- |
-| Frontend | React 19, React Router, Axios, Vite | User interface, routing, API calls, development server and production build (React, n.d.) |
-| Backend | Node.js, Express 5 | REST API and business logic (Node.js, n.d.; Express.js, n.d.) |
-| Database | MongoDB Atlas, Mongoose | Persistent storage and schema-based models (MongoDB, n.d.; Mongoose, n.d.) |
-| Authentication | jsonwebtoken, bcrypt | Signed access tokens and password hashing (Jones, Bradley and Sakimura, 2015; OWASP Foundation, n.d.h) |
-| Validation and sanitisation | Joi, xss | Schema validation and HTML stripping (Joi, n.d.; Lei, n.d.) |
-| HTTP security | Helmet, express-rate-limit, cors | Security headers, CSP, rate limiting and origin allow-list (Helmet.js, n.d.; express-rate-limit, n.d.) |
-| Testing | Postman, Newman, Vitest, React Testing Library | API and frontend automated tests (Postman, n.d.a; Postman, n.d.b; Vitest, n.d.; Testing Library, n.d.a) |
+| Frontend | React 19, React Router, Axios, Vite | User interface, routing, API calls, development server and production build |
+| Backend | Node.js, Express 5 | REST API and business logic (Node.js; Express.js) |
+| Database | MongoDB Atlas, Mongoose | Persistent storage and schema-based models (MongoDB; Mongoose) |
+| Authentication | jsonwebtoken, bcrypt | Signed access tokens and password hashing (Jones, Bradley and Sakimura, 2015) |
+| Validation and sanitisation | Joi, xss | Schema validation and HTML stripping (Joi) |
+| HTTP security | Helmet, express-rate-limit, cors | Security headers, CSP, rate limiting and origin allow-list (Helmet.js) |
+| Testing | Postman, Newman, Vitest, React Testing Library | API and frontend automated tests (Vitest) |
 
 ---
 
@@ -246,9 +246,9 @@ This section explains each control, how it is implemented and why it was chosen.
 
 ### 8.1 Password hashing
 
-Passwords are hashed with bcrypt (cost factor 10) before storage and checked with `bcrypt.compare` at login. Plain-text passwords are never stored or logged. bcrypt is deliberately slow and salted, which makes stolen hashes expensive to crack (OWASP Foundation, n.d.h).
+Passwords are hashed with bcrypt (cost factor 10) before storage and checked with `bcrypt.compare` at login. Plain-text passwords are never stored or logged. bcrypt is deliberately slow and salted, which makes stolen hashes expensive to crack.
 
-* **72-byte limit.** bcrypt ignores everything after 72 bytes, so passwords longer than 72 bytes are rejected at validation rather than being silently truncated (OWASP Foundation, n.d.h).
+* **72-byte limit.** bcrypt ignores everything after 72 bytes, so passwords longer than 72 bytes are rejected at validation rather than being silently truncated.
 * **Password policy.** At least 8 characters, with uppercase, lowercase, a number and a special character, enforced on both the frontend and the backend.
 * **Passwords are never altered.** They are excluded from sanitisation, so a password containing `<` or `>` reaches bcrypt exactly as typed.
 
@@ -256,15 +256,15 @@ Passwords are hashed with bcrypt (cost factor 10) before storage and checked wit
 
 On a successful login the API issues a JWT signed with `JWT_SECRET` (kept in `.env`) that contains the user's `id` and `role` and expires after **1 hour** (Jones, Bradley and Sakimura, 2015). `authenticateToken` verifies the signature and expiry on **every** protected request; a missing, tampered or expired token returns 401. A short lifetime limits how long a stolen token is useful.
 
-* **Generic login errors.** Login returns the same `401 Invalid credentials` for an unknown email and for a wrong password, so attackers cannot use the login form to discover which accounts exist (OWASP Foundation, n.d.a).
-* **Token storage on the frontend.** The token is kept in `sessionStorage`, which is cleared when the tab closes and is not sent automatically with requests (MDN Web Docs, n.d.c). Any 401 from a protected route clears the session and returns the user to the login page. The trade-off is that `sessionStorage` is readable by injected scripts; the XSS controls in section 8.4 mitigate this.
+* **Generic login errors.** Login returns the same `401 Invalid credentials` for an unknown email and for a wrong password, so attackers cannot use the login form to discover which accounts exist.
+* **Token storage on the frontend.** The token is kept in `sessionStorage`, which is cleared when the tab closes and is not sent automatically with requests. Any 401 from a protected route clears the session and returns the user to the login page. The trade-off is that `sessionStorage` is readable by injected scripts; the XSS controls in section 8.4 mitigate this.
 
 ### 8.3 Authorisation and role-based access control (RBAC)
 
-Authorisation is enforced on the backend, because frontend checks can be bypassed (OWASP Foundation, n.d.b). There are three layers:
+Authorisation is enforced on the backend, because frontend checks can be bypassed. There are three layers:
 
 1. **Role checks.** `authorizeRoles('freelancer')`, `authorizeRoles('client')` and `authorizeRoles('admin')` guard each route (see the access column in section 7). A wrong role returns 403.
-2. **Ownership checks.** Updating or deleting a gig first confirms that `gig.freelancer` matches the id in the JWT, otherwise 403. Viewing a booking requires being its client or freelancer. This prevents insecure direct object reference (IDOR), the most common form of broken access control (OWASP Foundation, 2021; OWASP Foundation, n.d.g).
+2. **Ownership checks.** Updating or deleting a gig first confirms that `gig.freelancer` matches the id in the JWT, otherwise 403. Viewing a booking requires being its client or freelancer. This prevents insecure direct object reference (IDOR), where a user reaches another user's data simply by changing an id in the request.
 3. **Query scoping.** "Mine" endpoints (`/gigs/mine`, `/bookings/mine`, `/transactions/mine`, `/income`) filter by the id in the JWT. No endpoint accepts a user id from the request, so a user cannot ask for someone else's data.
 
 Admin accounts cannot be created through `/auth/register`; the role field only accepts `client` or `freelancer`. The admin is created with `npm run seed:admin` from `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env`.
@@ -275,11 +275,11 @@ The React app also hides pages from the wrong roles (`ProtectedRoute`), but this
 
 Every request body passes through one middleware (`validationMiddleware.js`) in this order:
 
-1. **Sanitise.** Every string field except `password` is run through the `xss` library with an empty tag allow-list, which removes all HTML tags and drops the contents of `<script>` and `<style>` (Lei, n.d.; OWASP Foundation, n.d.c). For example, `<script>alert(1)</script> Logo design` is stored as `Logo design`.
-2. **Validate.** The cleaned body is checked against a Joi schema (Joi, n.d.). Sanitising first means length and "required" rules apply to what will actually be stored, so a title made only of a script tag is rejected with 400.
-3. **Strip unknown fields.** `stripUnknown: true` discards any field that is not in the schema. A client cannot send `freelancer`, `amount` or `role` to overwrite protected values, which prevents mass assignment (OWASP Foundation, n.d.f).
+1. **Sanitise.** Every string field except `password` is run through the `xss` library with an empty tag allow-list, which removes all HTML tags and drops the contents of `<script>` and `<style>`. For example, `<script>alert(1)</script> Logo design` is stored as `Logo design`.
+2. **Validate.** The cleaned body is checked against a Joi schema (Joi). Sanitising first means length and "required" rules apply to what will actually be stored, so a title made only of a script tag is rejected with 400.
+3. **Strip unknown fields.** `stripUnknown: true` discards any field that is not in the schema. A client cannot send `freelancer`, `amount` or `role` to overwrite protected values, which prevents mass assignment.
 
-Specific rules use an allow-list approach, accepting only known-good values (OWASP Foundation, n.d.e):
+Specific rules use an allow-list approach, accepting only known-good values:
 
 | Input | Rule |
 | --- | --- |
@@ -300,12 +300,12 @@ The frontend repeats the same rules for instant feedback, but the backend is the
 
 ### 8.5 Rate limiting
 
-Rate limits are defined in `middleware/rateLimiters.js` using express-rate-limit (express-rate-limit, n.d.). When a limit is exceeded the API returns **429** with a clear JSON message and a `Retry-After` header. Standard `RateLimit` headers tell clients how many requests remain.
+Rate limits are defined in `middleware/rateLimiters.js` using the express-rate-limit package. When a limit is exceeded the API returns **429** with a clear JSON message and a `Retry-After` header. Standard `RateLimit` headers tell clients how many requests remain.
 
 | Limiter | Applies to | Limit (per 15 minutes) | Why |
 | --- | --- | --- | --- |
 | API limiter | Every `/api` request, per IP | 300 | General protection against request flooding |
-| Auth limiter | `/api/auth/login` and `/register`, per IP | 10 **failed** attempts | Slows brute-force and credential-stuffing attacks; successful logins are not counted, so normal users are never locked out (OWASP Foundation, n.d.a) |
+| Auth limiter | `/api/auth/login` and `/register`, per IP | 10 **failed** attempts | Slows brute-force and credential-stuffing attacks; successful logins are not counted, so normal users are never locked out |
 | Booking limiter | `POST /api/bookings`, per client account | 20 bookings | Stops automated or abusive booking; keyed by user id, so one client cannot block others |
 
 Example response when the auth limit is exceeded:
@@ -318,7 +318,7 @@ The limits can be changed with `API_RATE_LIMIT`, `AUTH_RATE_LIMIT` and `BOOKING_
 
 ### 8.6 Security headers and Content Security Policy
 
-**Backend.** Helmet sets security headers on every response (Helmet.js, n.d.; OWASP Foundation, n.d.d), including `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN` and `Referrer-Policy`. It also sets an explicit Content Security Policy:
+**Backend.** Helmet sets security headers on every response (Helmet.js), including `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN` and `Referrer-Policy`. It also sets an explicit Content Security Policy:
 
 ```text
 default-src 'self'; base-uri 'self'; font-src 'self' https: data:; form-action 'self';
@@ -326,7 +326,7 @@ frame-ancestors 'self'; img-src 'self' data:; object-src 'none'; script-src 'sel
 script-src-attr 'none'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests
 ```
 
-**Frontend.** `vite.config.js` sends a CSP and further headers (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`) (Vite, n.d.a; Vite, n.d.b):
+**Frontend.** `vite.config.js` sends a CSP and further headers (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`) (Vite):
 
 ```text
 default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self';
@@ -334,7 +334,7 @@ script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;
 connect-src 'self' https://localhost:5000 ws://localhost:5173
 ```
 
-The policy only allows scripts from the app's own origin and API calls only to the HustleHub+ API, so an injected script cannot load code from elsewhere or send data to an attacker's server (MDN Web Docs, n.d.a). `frame-ancestors 'none'` and `X-Frame-Options: DENY` prevent clickjacking.
+The policy only allows scripts from the app's own origin and API calls only to the HustleHub+ API, so an injected script cannot load code from elsewhere or send data to an attacker's server. `frame-ancestors 'none'` and `X-Frame-Options: DENY` prevent clickjacking.
 
 | Mode | Command | CSP header |
 | --- | --- | --- |
@@ -343,12 +343,12 @@ The policy only allows scripts from the app's own origin and API calls only to t
 
 ### 8.7 HTTPS / TLS
 
-The API runs only over HTTPS using a locally generated certificate (`hustlehub-backend/ssl/`), so credentials, tokens and financial data are encrypted in transit (MDN Web Docs, n.d.b). HSTS tells browsers to use HTTPS for future requests. The MongoDB Atlas connection also uses TLS.
+The API runs only over HTTPS using a locally generated certificate (`hustlehub-backend/ssl/`), so credentials, tokens and financial data are encrypted in transit. HSTS tells browsers to use HTTPS for future requests. The MongoDB Atlas connection also uses TLS.
 
 ### 8.8 CORS, error handling and configuration
 
 * **CORS allow-list.** Only the origin in `CLIENT_ORIGIN` (the React app) may call the API from a browser, with only the methods and headers the app uses.
-* **Safe errors.** A central error handler logs full details on the server and returns only `"An unexpected error occurred"` for 500 errors. Stack traces, file paths and database messages are never sent to the client (Express.js, n.d.). The frontend also maps every error to a friendly message (`getErrorMessage`).
+* **Safe errors.** A central error handler logs full details on the server and returns only `"An unexpected error occurred"` for 500 errors. Stack traces, file paths and database messages are never sent to the client (Express.js). The frontend also maps every error to a friendly message (`getErrorMessage`).
 * **Secrets in environment variables.** The database URI, JWT secret and admin credentials are kept in `.env`, which is listed in `.gitignore` and never committed.
 * **Data minimisation.** Gig listings return only the freelancer's id, not their email. Emails are shown only to the other party in a booking, and to the admin.
 
@@ -445,7 +445,7 @@ VITE_API_URL=https://localhost:5000/api
 
 ### 11.1 API tests (Postman and Newman)
 
-Two Postman collections are stored in `hustlehub-backend/postman/` and run with Newman, Postman's command-line runner (Postman, n.d.a; Postman, n.d.b).
+Two Postman collections are stored in `hustlehub-backend/postman/` and run with Newman, Postman's command-line runner.
 
 | Collection | Contents | Result |
 | --- | --- | --- |
@@ -470,7 +470,7 @@ Without the `--env-var` options, `npm test` still runs and skips only the admin 
 
 ### 11.2 Frontend tests (Vitest and React Testing Library)
 
-The frontend tests render components in a simulated browser (jsdom), interact with them the way a user would, and mock the API so that no real requests are sent (Vitest, n.d.; Testing Library, n.d.a; Testing Library, n.d.b).
+The frontend tests render components in a simulated browser (jsdom), interact with them the way a user would, and mock the API so that no real requests are sent (Vitest).
 
 ```bash
 cd hustlehub-frontend
@@ -566,22 +566,22 @@ Screenshots are stored in `docs/screenshots/`.
 
 ## Reference list
 
-Express.js, *Production best practices: security*. [online] Available at: \<https://expressjs.com/en/advanced/best-practice-security/ > [Accessed 5th October 2026].
+Express.js, *Production best practices: security*. [online] Available at: \<https://expressjs.com/en/advanced/best-practice-security/\> [Accessed 5 October 2026].
 
-Helmet.js, *Helmet*. [online] Available at: \<https://helmet.js.org/ > [Accessed 5th October 2026].
+Helmet.js, *Helmet*. [online] Available at: \<https://helmet.js.org/\> [Accessed 5 October 2026].
 
-Joi, *API documentation*. [online] Available at: \<https://joi.dev/api/18.x.x > [Accessed 6th October 2026].
+Joi, *API documentation*. [online] Available at: \<https://joi.dev/api/18.x.x\> [Accessed 6 October 2026].
 
-Jones, M., Bradley, J. and Sakimura, N., 2015. *JSON Web Token (JWT), RFC 7519*. [online] Available at: \<https://datatracker.ietf.org/doc/rfc7519/ > [Accessed 9th October 2026].
+Jones, M., Bradley, J. and Sakimura, N., 2015. *JSON Web Token (JWT), RFC 7519*. [online] Available at: \<https://datatracker.ietf.org/doc/rfc7519/\> [Accessed 9 October 2026].
 
-MongoDB, *Security*. [online] Available at: \<https://www.mongodb.com/docs/v8.0/security/ > [Accessed 9th October 2026].
+MongoDB, *Security*. [online] Available at: \<https://www.mongodb.com/docs/v8.0/security/\> [Accessed 9 October 2026].
 
-Mongoose, *Getting started*. [online] Available at: \<https://mongoosejs.com/docs/ > [Accessed 6th October 2026].
+Mongoose, *Getting started*. [online] Available at: \<https://mongoosejs.com/docs/\> [Accessed 6 October 2026].
 
-Node.js, *About Node.js*. [online] Available at: \<https://nodejs.org/en/about > [Accessed 6th October 2026].
+Node.js, *About Node.js*. [online] Available at: \<https://nodejs.org/en/about\> [Accessed 6 October 2026].
 
-Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/preview-options > [Accessed 7th October 2026].
+Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/preview-options\> [Accessed 7 October 2026].
 
-Vite, *Server options*. [online] Available at: \<https://vite.dev/config/server-options > [Accessed 8th October 2026].
+Vite, *Server options*. [online] Available at: \<https://vite.dev/config/server-options\> [Accessed 8 October 2026].
 
-Vitest, *Getting started*. [online] Available at: \<https://vitest.dev/guide/ > [Accessed 10th October 2026].
+Vitest, *Getting started*. [online] Available at: \<https://vitest.dev/guide/\> [Accessed 10 October 2026].

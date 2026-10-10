@@ -494,25 +494,70 @@ The complete flow was also tested in the browser: registration and login validat
 
 ## 12. Evidence
 
-### 12.1 Part 2: Postman test runs
+The request numbers in the captions (for example 5.5) match the request names in the Postman collections in `hustlehub-backend/postman/`.
 
-<img width="1517" height="852" alt="Screenshot 2026-10-11 011538" src="https://github.com/user-attachments/assets/fcc6b369-6661-4809-8110-8e20278e0591" />
-<img width="757" height="266" alt="Screenshot 2026-10-11 011451" src="https://github.com/user-attachments/assets/83b5447d-6aa4-49e6-92b2-660cabd06922" />
-<img width="757" height="280" alt="Screenshot 2026-10-11 011434" src="https://github.com/user-attachments/assets/6da55191-92a1-4c56-90c3-518c3bf1f2ab" />
-<img width="1527" height="591" alt="Screenshot 2026-10-11 011106" src="https://github.com/user-attachments/assets/c7e238b5-ff77-46f5-a96b-12edf74889a4" />
-<img width="755" height="575" alt="Screenshot 2026-10-11 012634" src="https://github.com/user-attachments/assets/fa2c0358-82df-43e0-b36b-b0f749591337" />
-<img width="746" height="717" alt="Screenshot 2026-10-11 012619" src="https://github.com/user-attachments/assets/329598cb-c077-47f2-8914-6636b321a903" />
-<img width="756" height="727" alt="Screenshot 2026-10-11 012611" src="https://github.com/user-attachments/assets/e37897a5-9855-4b26-8d8c-d2d91953a3cf" />
-<img width="1537" height="892" alt="Screenshot 2026-10-11 012216" src="https://github.com/user-attachments/assets/13bc93ed-fc32-4b88-988e-b40470f35fab" />
-<img width="1532" height="847" alt="Screenshot 2026-10-11 012137" src="https://github.com/user-attachments/assets/89f1094c-a647-4c2b-a19f-7e1519ad738e" />
-<img width="1528" height="572" alt="Screenshot 2026-10-11 012121" src="https://github.com/user-attachments/assets/b27bf536-32d6-47c1-b7d3-a224543f45c9" />
-<img width="1526" height="857" alt="Screenshot 2026-10-11 012059" src="https://github.com/user-attachments/assets/d71001d3-8976-4397-b379-2a83a1d0e83b" />
-<img width="1527" height="621" alt="Screenshot 2026-10-11 011950" src="https://github.com/user-attachments/assets/6d0bb783-094a-4bca-a4c1-bc380052a955" />
-<img width="1531" height="871" alt="Screenshot 2026-10-11 011922" src="https://github.com/user-attachments/assets/72e4349b-9145-4ace-b596-8a5e74a0fe74" />
-<img width="1528" height="887" alt="Screenshot 2026-10-11 011902" src="https://github.com/user-attachments/assets/14837e91-48f5-4c50-84e3-77f33d2be56c" />
-<img width="1527" height="772" alt="Screenshot 2026-10-11 011750" src="https://github.com/user-attachments/assets/e52cd149-8b55-45d0-b4ae-3c7d6d4523ff" />
-<img width="1521" height="841" alt="Screenshot 2026-10-11 011645" src="https://github.com/user-attachments/assets/d453375d-f358-4e58-bef8-53054ae63e4a" />
-<img width="1522" height="716" alt="Screenshot 2026-10-11 011603" src="https://github.com/user-attachments/assets/d86520ee-1a53-4831-a07f-4fc7d54baa39" />
+### 12.1 Part 2: Postman collection runs
+
+**Figure 1: Main collection (HustleHub - Gigs) run in the Postman Collection Runner: 148 tests passed, 0 failed.** The run covers setup, gig creation, validation and malicious input, reading, updating and deleting gigs, bookings and transactions, income, admin access and security headers. It was made without admin credentials, so the admin-only requests were skipped; with credentials supplied the collection contains 159 tests.
+
+<img width="1527" height="591" alt="Figure 1: HustleHub - Gigs collection run, 148 passed, 0 failed" src="https://github.com/user-attachments/assets/c7e238b5-ff77-46f5-a96b-12edf74889a4" />
+
+**Figure 2: Rate-limit collection (HustleHub - Rate Limits) run: 22 tests passed, 0 failed.** The collection registers fresh test users, then repeatedly sends booking requests and failed logins until the booking and authentication rate limiters respond with 429 Too Many Requests, and checks the error messages and `Retry-After` headers.
+
+<img width="1537" height="892" alt="Figure 2: HustleHub - Rate Limits collection run, 22 passed, 0 failed" src="https://github.com/user-attachments/assets/13bc93ed-fc32-4b88-988e-b40470f35fab" />
+
+### 12.2 Part 2: Individual Postman requests
+
+**Figure 3: Request 1.7, registering through the public endpoint with the role `admin` (400 Bad Request).** This test checks that nobody can grant themselves admin rights: the role field only accepts `client` or `freelancer`, so validation rejects the request with "Role must be either client or freelancer". Both tests pass.
+
+<img width="1517" height="852" alt="Figure 3: Request 1.7, public registration as admin is rejected, 400 Bad Request" src="https://github.com/user-attachments/assets/fcc6b369-6661-4809-8110-8e20278e0591" />
+
+**Figure 4: Request 2.1, freelancer A creates a gig (201 Created).** This test checks that a freelancer can create a gig. The response shows the stored gig, with the `freelancer` id taken from the freelancer's JWT rather than from the request body.
+
+<img width="1532" height="847" alt="Figure 4: Request 2.1, freelancer creates a gig, 201 Created" src="https://github.com/user-attachments/assets/89f1094c-a647-4c2b-a19f-7e1519ad738e" />
+
+**Figure 5: Request 2.4, a client tries to create a gig (403 Forbidden).** This test checks role-based access control: the request is valid, but only freelancers may create gigs, so the client is rejected with "You are not allowed to perform this action".
+
+<img width="1528" height="572" alt="Figure 5: Request 2.4, client cannot create a gig, 403 Forbidden" src="https://github.com/user-attachments/assets/b27bf536-32d6-47c1-b7d3-a224543f45c9" />
+
+**Figure 6: Request 2.5, creating a gig with no token (401 Unauthorized).** This test checks that protected routes require authentication: without a JWT in the `Authorization` header the API responds with "Access token required".
+
+<img width="1522" height="716" alt="Figure 6: Request 2.5, no token, 401 Unauthorized" src="https://github.com/user-attachments/assets/d86520ee-1a53-4831-a07f-4fc7d54baa39" />
+
+**Figure 7: Request 3.4, creating a gig with text instead of a number for the price (400 Bad Request).** This test checks input validation: Joi rejects the request and returns a per-field error stating that `price` must be a number. Both tests pass.
+
+<img width="1527" height="772" alt="Figure 7: Request 3.4, invalid price type is rejected, 400 Bad Request" src="https://github.com/user-attachments/assets/e52cd149-8b55-45d0-b4ae-3c7d6d4523ff" />
+
+**Figure 8: Request 3.9, creating a gig whose title contains a script tag (201 Created).** This test checks sanitisation against cross-site scripting: the title `<script>alert(1)</script> Logo design` is cleaned before validation and stored as `Logo design`, with the tag and its script removed. All four tests pass.
+
+<img width="1521" height="841" alt="Figure 8: Request 3.9, script tag is stripped from the gig title" src="https://github.com/user-attachments/assets/d453375d-f358-4e58-bef8-53054ae63e4a" />
+
+**Figure 9: Request 4.1, a client browses all gigs (200 OK).** This test checks that the gig list works and that no personal data is exposed: each gig returns only the freelancer's id, with no email address or password hash. All tests pass.
+
+<img width="1526" height="857" alt="Figure 9: Request 4.1, client browses gigs with no emails exposed, 200 OK" src="https://github.com/user-attachments/assets/d71001d3-8976-4397-b379-2a83a1d0e83b" />
+
+**Figure 10: Request 5.5, freelancer B tries to update freelancer A's gig (403 Forbidden).** This test checks the ownership rule: a freelancer can only change their own gigs, so the request is rejected with "You do not own this gig". This prevents insecure direct object reference.
+
+<img width="757" height="280" alt="Figure 10: Request 5.5, freelancer cannot update another freelancer's gig, 403 Forbidden" src="https://github.com/user-attachments/assets/6da55191-92a1-4c56-90c3-518c3bf1f2ab" />
+
+**Figure 11: Request 7.1, a client books freelancer B's gig (201 Created).** This test checks the booking flow: the booking is confirmed at the gig's price of R300, and a linked transaction is created for the simulated payment with the same booking id, currency ZAR, payment method `simulated`, status `completed` and a unique `TXN-` reference.
+
+<img width="756" height="727" alt="Figure 11: Request 7.1, booking creates a linked transaction, 201 Created" src="https://github.com/user-attachments/assets/e37897a5-9855-4b26-8d8c-d2d91953a3cf" />
+
+**Figure 12: Request 7.2, a client sends a tampered amount and freelancer (201 Created).** This test checks that clients cannot change the price or the payee: the request body sets `"amount": 1` and freelancer A's id, but the server ignores both, recording the booking and transaction at the real gig price of R300 for the gig's actual owner, freelancer B.
+
+<img width="746" height="717" alt="Figure 12: Request 7.2, client-supplied amount and freelancer are ignored" src="https://github.com/user-attachments/assets/329598cb-c077-47f2-8914-6636b321a903" />
+
+**Figure 13: Request 8.1, freelancer B's income summary (200 OK).** This test checks that income is tracked for the correct freelancer: the two bookings from requests 7.1 and 7.2 at R300 each give a total income of R600, 2 bookings, an average of R300 per booking and R600 this month, with a monthly breakdown.
+
+<img width="755" height="575" alt="Figure 13: Request 8.1, freelancer income summary, 200 OK" src="https://github.com/user-attachments/assets/fa2c0358-82df-43e0-b36b-b0f749591337" />
+
+**Figure 14: Request 9.2, a freelancer tries to list all users (403 Forbidden).** This test checks that admin routes are restricted to the admin role: the freelancer is rejected with "You are not allowed to perform this action".
+
+<img width="757" height="266" alt="Figure 14: Request 9.2, freelancer cannot use the admin route, 403 Forbidden" src="https://github.com/user-attachments/assets/83b5447d-6aa4-49e6-92b2-660cabd06922" />
+
+### 12.3 Part 1: Postman registration and login
+
 <img width="1600" height="1000" alt="Part 1 Postman evidence" src="https://github.com/user-attachments/assets/fa122d3b-cfe1-4446-a86d-c59ba0cc50b7" />
 
 <img width="1600" height="1000" alt="Part 1 Postman evidence" src="https://github.com/user-attachments/assets/3e560625-c884-4c8d-8363-b1869fc1a69a" />

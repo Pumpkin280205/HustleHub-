@@ -566,22 +566,22 @@ Screenshots are stored in `docs/screenshots/`.
 
 ## Reference list
 
-Express.js, *Production best practices: security*. [online] Available at: \<https://expressjs.com/en/advanced/best-practice-security/\> [Accessed 5th October 2026].
+Express.js, *Production best practices: security*. [online] Available at: \<https://expressjs.com/en/advanced/best-practice-security/ > [Accessed 5th October 2026].
 
-Helmet.js, *Helmet*. [online] Available at: \<https://helmet.js.org/\> [Accessed 5th October 2026].
+Helmet.js, *Helmet*. [online] Available at: \<https://helmet.js.org/ > [Accessed 5th October 2026].
 
-Joi, *API documentation*. [online] Available at: \<https://joi.dev/api/18.x.x\> [Accessed 6th October 2026].
+Joi, *API documentation*. [online] Available at: \<https://joi.dev/api/18.x.x > [Accessed 6th October 2026].
 
-Jones, M., Bradley, J. and Sakimura, N., 2015. *JSON Web Token (JWT), RFC 7519*. [online] Available at: \<https://datatracker.ietf.org/doc/rfc7519/\> [Accessed 9th October 2026].
+Jones, M., Bradley, J. and Sakimura, N., 2015. *JSON Web Token (JWT), RFC 7519*. [online] Available at: \<https://datatracker.ietf.org/doc/rfc7519/ > [Accessed 9th October 2026].
 
-MongoDB, *Security*. [online] Available at: \<https://www.mongodb.com/docs/v8.0/security/\> [Accessed 9th October 2026].
+MongoDB, *Security*. [online] Available at: \<https://www.mongodb.com/docs/v8.0/security/ > [Accessed 9th October 2026].
 
-Mongoose, *Getting started*. [online] Available at: \<https://mongoosejs.com/docs/\> [Accessed 6th October 2026].
+Mongoose, *Getting started*. [online] Available at: \<https://mongoosejs.com/docs/ > [Accessed 6th October 2026].
 
-Node.js, *About Node.js*. [online] Available at: \<https://nodejs.org/en/about\> [Accessed 6th October 2026].
+Node.js, *About Node.js*. [online] Available at: \<https://nodejs.org/en/about > [Accessed 6th October 2026].
 
-Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/preview-options\> [Accessed 7th October 2026].
+Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/preview-options > [Accessed 7th October 2026].
 
-Vite, *Server options*. [online] Available at: \<https://vite.dev/config/server-options\> [Accessed 8th October 2026].
+Vite, *Server options*. [online] Available at: \<https://vite.dev/config/server-options > [Accessed 8th October 2026].
 
-Vitest, *Getting started*. [online] Available at: \<https://vitest.dev/guide/\> [Accessed 10th October 2026].
+Vitest, *Getting started*. [online] Available at: \<https://vitest.dev/guide/ > [Accessed 10th October 2026].

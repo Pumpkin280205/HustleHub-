@@ -112,7 +112,7 @@ flowchart TB
 | Authentication | jsonwebtoken, bcrypt | Signed access tokens and password hashing (Jones, Bradley and Sakimura, 2015) |
 | Validation and sanitisation | Joi, xss | Schema validation and HTML stripping (Joi) |
 | HTTP security | Helmet, express-rate-limit, cors | Security headers, CSP, rate limiting and origin allow-list (Helmet.js) |
-| Testing | Postman, Newman, Vitest, React Testing Library | API and frontend automated tests (Vitest) |
+| Testing | Postman, Newman, Vitest, React Testing Library | API and frontend automated tests (Vitest; Testing Library) |
 
 ---
 
@@ -470,7 +470,7 @@ Without the `--env-var` options, `npm test` still runs and skips only the admin 
 
 ### 11.2 Frontend tests (Vitest and React Testing Library)
 
-The frontend tests render components in a simulated browser (jsdom), interact with them the way a user would, and mock the API so that no real requests are sent (Vitest).
+The frontend tests render components in a simulated browser (jsdom), interact with them the way a user would, and mock the API so that no real requests are sent (Vitest; Testing Library).
 
 ```bash
 cd hustlehub-frontend
@@ -556,7 +556,13 @@ The request numbers in the captions (for example 5.5) match the request names in
 
 <img width="757" height="266" alt="Figure 14: Request 9.2, freelancer cannot use the admin route, 403 Forbidden" src="https://github.com/user-attachments/assets/83b5447d-6aa4-49e6-92b2-660cabd06922" />
 
-### 12.3 Part 1: Postman registration and login
+### 12.3 Part 2: Frontend tests and application
+
+**Figure 15: Frontend automated tests run with Vitest and React Testing Library: The tests render each component in a simulated browser, interact with it the way a user would, and mock the API so that no real requests are sent. 
+
+<img width="935" height="692" alt="Figure 15: Frontend tests, 4 test files and 17 tests passed" src="https://github.com/user-attachments/assets/3bf8ef39-955e-4bbb-b238-92dfcc4f4981" />
+
+### 12.4 Part 1: Postman registration and login
 
 <img width="1600" height="1000" alt="Part 1 Postman evidence" src="https://github.com/user-attachments/assets/fa122d3b-cfe1-4446-a86d-c59ba0cc50b7" />
 
@@ -610,6 +616,10 @@ MongoDB, *Security*. [online] Available at: \<https://www.mongodb.com/docs/v8.0/
 Mongoose, *Getting started*. [online] Available at: \<https://mongoosejs.com/docs/\> [Accessed 6 October 2026].
 
 Node.js, *About Node.js*. [online] Available at: \<https://nodejs.org/en/about\> [Accessed 6 October 2026].
+
+Testing Library, *React Testing Library*. [online] Available at: \<https://testing-library.com/docs/react-testing-library/intro/\> [Accessed 11 October 2026].
+
+Testing Library, *User Event: introduction*. [online] Available at: \<https://testing-library.com/docs/user-event/intro/\> [Accessed 11 October 2026].
 
 Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/preview-options\> [Accessed 7 October 2026].
 

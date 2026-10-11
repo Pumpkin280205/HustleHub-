@@ -5,7 +5,7 @@ HustleHub+ is a secure MERN freelance marketplace. Freelancers advertise service
 | Deliverable | Link |
 | --- | --- |
 | Part 1 demonstration video | https://youtu.be/EAS0zCbsnIk |
-| Part 2 demonstration video | *Add link before submission* |
+| Part 2 demonstration video | https://youtu.be/QLtFmcK9Nzs |
 
 ---
 

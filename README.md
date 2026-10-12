@@ -631,3 +631,18 @@ Vite, *Preview options*. [online] Available at: \<https://vite.dev/config/previe
 Vite, *Server options*. [online] Available at: \<https://vite.dev/config/server-options\> [Accessed 8 October 2026].
 
 Vitest, *Getting started*. [online] Available at: \<https://vitest.dev/guide/\> [Accessed 10 October 2026].
+
+
+Declaration of AI Usage 
+ 
+Artificial Intelligence (AI) tools were used during this project as a supplementary learning and guidance resource. AI assisted the group with understanding technical concepts, troubleshooting development issues, exploring possible implementation approaches, and improving the structure and presentation of selected documentation. All final decisions, system design, development, testing, diagrams, implementation, and submitted work were completed, reviewed, and adapted by the group members. The group takes full responsibility for the accuracy, originality, and final content of the submitted project. AI was therefore used as a support tool and did not replace the group's own participation, understanding, or contribution to the project. 
+
+
+ChatGPT Links to access: 
+
+https://chatgpt.com/share/6acd2614-44a4-83ea-8b00-1427f606773a
+
+![Uploading image.png…]()
+
+https://chatgpt.com/share/6acd2f8f-ed84-83ea-9bd2-19f666dd5dc1
+

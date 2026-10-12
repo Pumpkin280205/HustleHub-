@@ -26,6 +26,8 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
     "newman": "^6.2.2",
     "nodemon": "^3.1.14"
   }

@@ -31,16 +31,16 @@ HustleHub+ is a secure MERN freelance marketplace. Freelancers advertise service
 
 ## 1. System overview
 
-HustleHub+ processes user credentials, bookings, financial transactions and income data, so security was designed in from the start rather than added afterwards. The backend API is the security boundary: the React frontend never talks to the database, and every request that reads or changes data is authenticated, authorised, sanitised and validated by the backend first.
+HustleHub+ processes user credentials, bookings, financial transactions and income data, so security was designed in from the start rather than added afterwards (Express.js, n.d.) The backend API is the security boundary: the React frontend never talks to the database, and every request that reads or changes data is authenticated, authorised, sanitised and validated by the backend first (Express.js, n.d.; Joi, n.d.).
 
 **What changed in Part 2.** Part 1 delivered a secure backend for registration and login with in-memory storage. Part 2 extends it into a full-stack application:
 
-* MongoDB persistence (via Mongoose) replaces the in-memory user store.
+* MongoDB persistence (via Mongoose) replaces the in-memory user store (MongoDB, n.d.; Mongoose, n.d.).
 * Gig management, bookings, simulated payments with transaction records, and income tracking.
 * A React frontend for clients and freelancers.
-* Role-based access control for clients, freelancers and administrators, including resource-ownership checks.
-* Input sanitisation, rate limiting, Helmet security headers and a Content Security Policy.
-* Automated testing: Postman collections run with Newman, and frontend tests with Vitest and React Testing Library.
+* Role-based access control for clients, freelancers and administrators, including resource-ownership checks (Jones,Bradley and Sakimura,2015).
+* Input sanitisation, rate limiting, Helmet security headers and a Content Security Policy (Express.js,n.d.; Helmet.js, n.d.).
+* Automated testing: Postman collections run with Newman, and frontend tests with Vitest and React Testing Library (Vitest, n.d.; Testing Library, n.d.-a; Testing Library, n.d.-b).
 
 ---
 
@@ -348,7 +348,7 @@ The API runs only over HTTPS using a locally generated certificate (`hustlehub-b
 ### 8.8 CORS, error handling and configuration
 
 * **CORS allow-list.** Only the origin in `CLIENT_ORIGIN` (the React app) may call the API from a browser, with only the methods and headers the app uses.
-* **Safe errors.** A central error handler logs full details on the server and returns only `"An unexpected error occurred"` for 500 errors. Stack traces, file paths and database messages are never sent to the client (Express.js). The frontend also maps every error to a friendly message (`getErrorMessage`).
+* **Safe errors.** A central error handler logs full details on the server and returns only `"An unexpected error occurred"` for 500 errors. Stack traces, file paths and database messages are never sent to the client (Express.js, n.d.). The frontend also maps every error to a friendly message (`getErrorMessage`).
 * **Secrets in environment variables.** The database URI, JWT secret and admin credentials are kept in `.env`, which is listed in `.gitignore` and never committed.
 * **Data minimisation.** Gig listings return only the freelancer's id, not their email. Emails are shown only to the other party in a booking, and to the admin.
 

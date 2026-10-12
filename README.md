@@ -492,6 +492,11 @@ The complete flow was also tested in the browser: registration and login validat
 
 ---
 
+###11.4 Playwright testing
+
+<img width="1303" height="306" alt="Screenshot 2026-10-12 at 13 28 49" src="https://github.com/user-attachments/assets/2fb35371-c7e0-4259-bc75-12b0ea4de268" />
+
+
 ## 12. Evidence
 
 The request numbers in the captions (for example 5.5) match the request names in the Postman collections in `hustlehub-backend/postman/`.

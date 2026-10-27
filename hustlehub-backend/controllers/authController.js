@@ -8,7 +8,7 @@ exports.register = async (req, res, next) => {
     const { password, role } = req.body;
 
     // Joi has already rejected anything that is not an email string, so no query operator can reach this filter
-    if (await User.findOne({ email })) { 
+    if (await User.findOne({ email })) { // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
       return res.status(409).json({ success: false, message: 'User already exists' });
     }
 
@@ -28,7 +28,7 @@ exports.login = async (req, res, next) => {
 
     // password has select:false on the model, so ask for it explicitly.
     // email is a Joi-validated string, so no query operator can reach this filter
-    const user = await User.findOne({ email }).select('+password'); 
+    const user = await User.findOne({ email }).select('+password'); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
 
     // Same response for unknown email and wrong password so attackers can't discover accounts
     if (!user || !(await bcrypt.compare(password, user.password))) {

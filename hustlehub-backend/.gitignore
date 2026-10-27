@@ -7,3 +7,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Private key must never be committed; generate locally (see README)
+ssl/key.pem

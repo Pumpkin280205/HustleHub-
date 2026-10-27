@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "newman run postman/HustleHub-Gigs.postman_collection.json --insecure",
-    "test:rate-limits": "newman run postman/HustleHub-RateLimits.postman_collection.json --insecure",
+    "test:unit": "node --test \"unit-tests/*.test.js\"",
+    "test:rate-limits":"newman run postman/HustleHub-RateLimits.postman_collection.json --insecure",
     "dev": "nodemon server.js",
     "seed:admin": "node scripts/seedAdmin.js"
   },

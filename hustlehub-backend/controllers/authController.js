@@ -7,7 +7,8 @@ exports.register = async (req, res, next) => {
     const email = req.body.email.toLowerCase();
     const { password, role } = req.body;
 
-    if (await User.findOne({ email })) {
+    // Joi has already rejected anything that is not an email string, so no query operator can reach this filter
+    if (await User.findOne({ email })) { 
       return res.status(409).json({ success: false, message: 'User already exists' });
     }
 
@@ -25,8 +26,9 @@ exports.login = async (req, res, next) => {
     const email = req.body.email.toLowerCase();
     const { password } = req.body;
 
-    // password has select:false on the model, so ask for it explicitly
-    const user = await User.findOne({ email }).select('+password');
+    // password has select:false on the model, so ask for it explicitly.
+    // email is a Joi-validated string, so no query operator can reach this filter
+    const user = await User.findOne({ email }).select('+password'); 
 
     // Same response for unknown email and wrong password so attackers can't discover accounts
     if (!user || !(await bcrypt.compare(password, user.password))) {

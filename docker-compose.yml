@@ -1,0 +1,46 @@
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # No ports published: the database is only reachable from the API container
+
+  backend:
+    build: ./hustlehub-backend
+    restart: unless-stopped
+    env_file:
+      - path: ./hustlehub-backend/.env
+        required: false
+    environment:
+      PORT: 5000
+      # Uses the bundled database by default; set DOCKER_MONGO_URI to use Atlas instead
+      MONGO_URI: ${DOCKER_MONGO_URI:-mongodb://mongo:27017/hustlehub}
+      CLIENT_ORIGIN: http://localhost:5173
+    volumes:
+      - ./hustlehub-backend/ssl:/app/ssl:ro
+    ports:
+      - "5000:5000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./hustlehub-frontend
+      args:
+        VITE_API_URL: https://localhost:5000/api
+    restart: unless-stopped
+    ports:
+      - "5173:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mongo-data:

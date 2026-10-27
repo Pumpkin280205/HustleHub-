@@ -16,6 +16,7 @@ export function validateRegister({ email, password, confirmPassword, role }) {
   else if (password && !PASSWORD_RULE.test(password)) {
     errors.password = 'Password must include uppercase, lowercase, a number and a special character';
   }
+  // Client-side check of the user's own typing; nothing secret is compared, so timing is irrelevant
   if (confirmPassword !== password) errors.confirmPassword = 'Passwords do not match';
   if (!['client', 'freelancer'].includes(role)) errors.role = 'Choose an account type';
   return errors;

@@ -102,7 +102,8 @@ const validate = schema => (req, res, next) => {
 };
 
 const validateObjectId = (req, res, next) => {
-    if (!/^[a-f\d]{24}$/i.test(req.params.id)) {
+    // Anchored, fixed-length pattern with no nested quantifiers, so it cannot backtrack catastrophically
+    if (!/^[a-f\d]{24}$/i.test(req.params.id)) { 
         return res.status(400).json({
             success: false,
             message: 'Invalid ID'

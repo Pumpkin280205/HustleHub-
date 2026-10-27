@@ -1,0 +1,23 @@
+# Dependencies are installed inside the image
+node_modules
+
+# Secrets and certificates are supplied at runtime, never baked into the image
+.env
+.env.*
+ssl
+
+# Tests, test tooling and reports are not needed to run the API
+unit-tests
+tests
+postman
+reports
+playwright.config.js
+playwright-report
+test-results
+blob-report
+*.log
+
+.git
+.github
+Dockerfile
+.dockerignore

@@ -27,18 +27,6 @@ jobs:
       run:
         working-directory: hustlehub-backend
 
-    # Throwaway database for the Newman API tests
-    services:
-      mongo:
-        image: mongo:8
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
     env:
       PORT: 5000
       MONGO_URI: mongodb://localhost:27017/hustlehub-ci
@@ -68,6 +56,18 @@ jobs:
         run: |
           find server.js app.js config controllers middleware models routes scripts -name '*.js' -print0 | xargs -0 -n1 node --check
           node -e "require('./app'); console.log('App module loads')"
+
+      # Throwaway database for the Newman API tests. Started as a step rather than a
+      # service container so a startup problem prints the database log instead of failing silently
+      - name: Start MongoDB
+        run: |
+          docker run -d --name mongo -p 27017:27017 mongo:8
+          for i in $(seq 1 30); do
+            docker exec mongo mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok" > /dev/null 2>&1 \
+              && echo "MongoDB is up" && exit 0
+            sleep 2
+          done
+          echo "MongoDB did not start"; docker logs mongo; exit 1
 
       # Secrets are generated per run so nothing sensitive lives in the repository
       - name: Generate CI secrets and TLS certificate
@@ -280,8 +280,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: semgrep scan $SEMGREP_ARGS --sarif --output semgrep.sarif || true
 
+      # The Security tab (code scanning) needs GitHub Advanced Security on private repos,
+      # so there the SARIF report is kept as a downloadable artifact only (next step)
       - name: Upload results to GitHub code scanning
-        if: ${{ !cancelled() && hashFiles('semgrep.sarif') != '' }}
+        if: ${{ !cancelled() && hashFiles('semgrep.sarif') != '' && !github.event.repository.private }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
@@ -295,8 +297,11 @@ jobs:
           path: semgrep.sarif
           retention-days: 30
 
+  # CodeQL is free for public repositories; private repos need GitHub Advanced Security,
+  # so the job is skipped there and Semgrep remains the static analysis gate
   codeql:
     name: Static analysis - CodeQL
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

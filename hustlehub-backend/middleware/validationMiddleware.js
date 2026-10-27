@@ -103,7 +103,7 @@ const validate = schema => (req, res, next) => {
 
 const validateObjectId = (req, res, next) => {
     // Anchored, fixed-length pattern with no nested quantifiers, so it cannot backtrack catastrophically
-    if (!/^[a-f\d]{24}$/i.test(req.params.id)) { 
+    if (!/^[a-f\d]{24}$/i.test(req.params.id)) { // nosemgrep: ajinabraham.njsscan.dos.regex_dos.regex_dos
         return res.status(400).json({
             success: false,
             message: 'Invalid ID'

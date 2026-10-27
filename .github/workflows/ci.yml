@@ -243,8 +243,10 @@ jobs:
   semgrep:
     name: Static analysis - Semgrep
     runs-on: ubuntu-latest
+    # actions: read lets the upload step look up this run, which private repos require
     permissions:
       contents: read
+      actions: read
       security-events: write
     container:
       image: semgrep/semgrep:1.140.0
@@ -280,7 +282,7 @@ jobs:
 
       - name: Upload results to GitHub code scanning
         if: ${{ !cancelled() && hashFiles('semgrep.sarif') != '' }}
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
           category: semgrep
@@ -298,13 +300,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: read
       security-events: write
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Initialise CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
           queries: security-extended
@@ -314,6 +317,6 @@ jobs:
               - '**/dist'
 
       - name: Analyse
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: codeql

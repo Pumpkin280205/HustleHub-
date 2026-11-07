@@ -100,7 +100,7 @@ gig do not rewrite historical booking information.
 **Tax estimation.** The backend income functionality includes a tax
 estimate based on the current South African tax year and the income data
 used by the calculation. The estimate is informational and is not
-professional tax advice. The current freelancer dashboard does not
+professional tax advice. The current freelancer dashboard does
 display a dedicated tax card or tax chart.
 
 ## 3. System architecture
@@ -846,8 +846,7 @@ executed and passed for this submission.
 ## 14. Team and contributions
 
 The following table summarises the responsibilities relevant to the Part
-2 project and the final testing/documentation work. Confirm GitHub
-usernames and any final role changes with the team before submission.
+2 project and the final testing/documentation work. 
 
   -----------------------------------------------------------------------
   Team member                         Contribution

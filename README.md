@@ -817,40 +817,18 @@ provide supporting security evidence.
 
 ### 12.1 Required testing screenshots
 
-1. **Figure 1 – Main Newman API test results.** Capture the terminal
-   after running `npm test` in `hustlehub-backend`. It must clearly show
-   **148 assertions passed and 0 failed**.
-2. **Figure 2 – Newman rate-limit test results.** Capture the terminal
-   after running `npm run test:rate-limits` in `hustlehub-backend`. It
-   must show **22 assertions passed and 0 failed**.
-3. **Figure 3 – Full frontend Vitest results.** Capture the terminal
-   after running `npm test` in `hustlehub-frontend`. It must show
-   **30 tests passed across 5 test files**, with no failures.
+1. **Figure 1 – Main Newman API test results.** 
+<img width="1339" height="692" alt="image" src="https://github.com/user-attachments/assets/4a804102-c296-4988-a6e2-a4e292fae01b" />
 
-### 12.2 Recommended security evidence screenshots
+2. **Figure 2 – Newman rate-limit test results.** 
+<img width="1312" height="701" alt="image" src="https://github.com/user-attachments/assets/25f52094-cc3b-438c-91c6-9a50b234bb91" />
 
-4. **Figure 4 – Public admin registration blocked.** Show the Postman
-   request attempting to register with the `admin` role and the API's
-   rejection response.
-5. **Figure 5 – Authentication required.** Show a protected API request
-   without a bearer token returning HTTP 401.
-6. **Figure 6 – Role-based access control.** Show a user attempting an
-   operation outside their permitted role and receiving HTTP 403.
-7. **Figure 7 – Input security.** Show the relevant Postman request and
-   response for an XSS or NoSQL-injection test.
-8. **Figure 8 – Rate limiting.** Show a repeated-request test returning
-   HTTP 429 and the `Retry-After` response header.
+3. **Figure 3 – Full frontend Vitest results.** 
+<img width="1312" height="701" alt="image" src="https://github.com/user-attachments/assets/9f6fde31-55cf-440d-937f-aae88cff2a70" />
 
-For Postman evidence, keep the request method, endpoint, status code and
-relevant response visible. Do not include passwords, JWTs, database
-connection strings, or other secrets in screenshots. Use the actual
-results from the test run; do not recreate or alter test output.
 
-### 12.3 Previous Part 1 evidence
 
-Retain the original Part 1 registration and login screenshots or video
-links where they remain relevant to the final submission. Check that
-repository image links are accessible before submitting.
+
 
 ## 13. Project completion
 

@@ -5,6 +5,7 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authMiddleware');
 const authorizeRoles = require('../middleware/roleMiddleware');
 const { validateObjectId } = require('../middleware/validationMiddleware');
+const c = require('../controllers/adminController');
 const { readAudit } = require('../utils/audit');
 
 

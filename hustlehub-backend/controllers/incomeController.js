@@ -29,33 +29,40 @@ exports.getIncomeSummary = async (req, res) => {
     now.toLocaleString('en-US', { timeZone: TIMEZONE })
   );
 
-  const startOfMonth = new Date(
-    saToday.getFullYear(),
-    saToday.getMonth(),
-    1
-  );
+  // Calculate month boundaries using South African Standard Time (UTC+02:00).
+// This ensures accurate reporting regardless of the server's timezone.
+const currentYear = saToday.getFullYear();
+const currentMonth = saToday.getMonth();
 
-  const twelveMonthsAgo = new Date(startOfMonth);
-  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+const startOfMonth = new Date(
+  `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01T00:00:00+02:00`
+);
 
-  // SARS tax year runs from 1 March to the end of February.
-  const currentYear = saToday.getFullYear();
-  const currentMonth = saToday.getMonth();
+// Calculate the start of the 12-month reporting period.
+const twelveMonthsAgoDate = new Date(
+  Date.UTC(currentYear, currentMonth - 11, 1)
+);
+
+const twelveMonthsAgo = new Date(
+  `${twelveMonthsAgoDate.getUTCFullYear()}-${String(
+    twelveMonthsAgoDate.getUTCMonth() + 1
+  ).padStart(2, '0')}-01T00:00:00+02:00`
+);
+
+  
 
   const taxYearStartYear =
     currentMonth >= 2 ? currentYear : currentYear - 1;
 
-  const taxYearStart = new Date(
-    taxYearStartYear,
-    2,
-    1
-  );
+  // SARS tax year boundaries in South African Standard Time (UTC+02:00).
+// Start is inclusive; end is exclusive.
+const taxYearStart = new Date(
+  `${taxYearStartYear}-03-01T00:00:00+02:00`
+);
 
-  const taxYearEnd = new Date(
-    taxYearStartYear + 1,
-    2,
-    1
-  );
+const taxYearEnd = new Date(
+  `${taxYearStartYear + 1}-03-01T00:00:00+02:00`
+);
 
   const [result] = await Transaction.aggregate([
     {

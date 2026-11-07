@@ -1,12 +1,12 @@
+require('dotenv').config();
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 
-dotenv.config();
-
 const { apiLimiter, authLimiter } = require('./middleware/rateLimiters');
 const errorHandler = require('./middleware/errorMiddleware');
+
+const requestLogger = require('./middleware/requestLogger');
 
 const app = express();
 
@@ -25,6 +25,8 @@ app.use(helmet({
 
 // Parse JSON request bodies.
 app.use(express.json());
+
+app.use(requestLogger);
 
 // Configure Cross-Origin Resource Sharing (CORS).
 app.use(cors({

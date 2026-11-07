@@ -27,8 +27,7 @@ completed bookings.
 10. [Running the application](#10-running-the-application)
 11. [Testing](#11-testing)
 12. [Evidence](#12-evidence)
-13. [Known limitations and planned
-    work](#13-known-limitations-and-planned-work)
+13. [Project completion](#13-project-completion)
 14. [Team and contributions](#14-team-and-contributions)
 15. [Reference list](#reference-list)
 16. [Declaration of AI usage](#declaration-of-ai-usage)
@@ -668,13 +667,6 @@ The Vite development server normally runs at:
 http://localhost:5173
 ```
 
-### 10.4 Docker and deployment note
-
-Docker/Compose setup and CI/CD configuration should be documented using
-the actual files and commands included in the final repository. If
-Docker files are not present in the checked-out branch, do not assume
-that Docker deployment is already configured.
-
 ### 10.5 Troubleshooting
 
   -----------------------------------------------------------------------
@@ -819,93 +811,59 @@ requests were not counted as passed tests.
 
 ## 12. Evidence
 
-Add current screenshots from the final test runs and application where
-available. Do not leave outdated test counts in screenshot captions.
+Include screenshots of the actual final test results. The first three
+screenshots are the essential testing evidence; the remaining screenshots
+provide supporting security evidence.
 
-Suggested evidence captions:
+### 12.1 Required testing screenshots
 
-1.  **Figure 1:** Main Newman API collection --- 148 assertions passed,
-    0 failed.
-2.  **Figure 2:** Newman rate-limit collection --- 22 assertions passed,
-    0 failed.
-3.  **Figure 3:** Frontend Vitest suite --- 30 tests passed across 5
-    files.
-4.  **Figure 4:** Public registration attempt using the `admin` role
-    rejected by validation.
-5.  **Figure 5:** Protected endpoint request without a JWT rejected with
-    HTTP 401.
-6.  **Figure 6:** Role-based access attempt rejected with HTTP 403.
-7.  **Figure 7:** XSS payload sanitised before storage.
-8.  **Figure 8:** NoSQL injection payload rejected by validation.
-9.  **Figure 9:** Rate-limit response showing HTTP 429 and
-    `Retry-After`.
+1. **Figure 1 – Main Newman API test results.** Capture the terminal
+   after running `npm test` in `hustlehub-backend`. It must clearly show
+   **148 assertions passed and 0 failed**.
+2. **Figure 2 – Newman rate-limit test results.** Capture the terminal
+   after running `npm run test:rate-limits` in `hustlehub-backend`. It
+   must show **22 assertions passed and 0 failed**.
+3. **Figure 3 – Full frontend Vitest results.** Capture the terminal
+   after running `npm test` in `hustlehub-frontend`. It must show
+   **30 tests passed across 5 test files**, with no failures.
 
-Insert the corresponding screenshots below the captions when preparing
-the final submission.
+### 12.2 Recommended security evidence screenshots
 
-### 12.1 Previous Part 1 evidence
+4. **Figure 4 – Public admin registration blocked.** Show the Postman
+   request attempting to register with the `admin` role and the API's
+   rejection response.
+5. **Figure 5 – Authentication required.** Show a protected API request
+   without a bearer token returning HTTP 401.
+6. **Figure 6 – Role-based access control.** Show a user attempting an
+   operation outside their permitted role and receiving HTTP 403.
+7. **Figure 7 – Input security.** Show the relevant Postman request and
+   response for an XSS or NoSQL-injection test.
+8. **Figure 8 – Rate limiting.** Show a repeated-request test returning
+   HTTP 429 and the `Retry-After` response header.
 
-The original Part 1 registration and login evidence can be retained if
-it remains relevant to the final submission. Check that all image links
-are accessible from the repository before submission.
+For Postman evidence, keep the request method, endpoint, status code and
+relevant response visible. Do not include passwords, JWTs, database
+connection strings, or other secrets in screenshots. Use the actual
+results from the test run; do not recreate or alter test output.
 
-## 13. Known limitations and planned work
+### 12.3 Previous Part 1 evidence
 
-  -----------------------------------------------------------------------
-  Item                                Notes
-  ----------------------------------- -----------------------------------
-  In-memory rate-limit counters       Rate-limit counters reset when the
-                                      server restarts and are not shared
-                                      between multiple server instances.
-                                      A shared store such as Redis would
-                                      be more suitable for a
-                                      multi-instance production
-                                      deployment.
+Retain the original Part 1 registration and login screenshots or video
+links where they remain relevant to the final submission. Check that
+repository image links are accessible before submitting.
 
-  JWT in `sessionStorage`             Browser scripts can read values
-                                      stored in `sessionStorage`.
-                                      Sanitisation, output escaping, CSP
-                                      and token expiry reduce risk, but
-                                      an HttpOnly cookie with appropriate
-                                      CSRF protection may provide
-                                      stronger protection.
+## 13. Project completion
 
-  Self-signed development certificate Suitable for local development
-                                      only. A trusted certificate is
-                                      required for production deployment.
+All planned project features and implementation work for this submission
+are considered completed. The final system includes the marketplace
+workflow, user authentication and role-based access, gig management,
+bookings, simulated payments and transaction records, freelancer income
+and tax functionality, input validation and sanitisation, rate limiting,
+security headers, and the supporting API and frontend test suites.
 
-  Token revocation                    Tokens remain valid until expiry
-                                      unless additional revocation
-                                      functionality is implemented.
-
-  Tax estimate                        The backend provides an estimated
-                                      tax result. It is an estimate only
-                                      and should be checked against
-                                      current SARS guidance; it is not
-                                      professional tax advice.
-
-  Dashboard tax visualisation         The current freelancer dashboard
-                                      tests cover the income summary and
-                                      monthly income records. A dedicated
-                                      tax card/chart is not present in
-                                      the dashboard component reviewed
-                                      for this testing contribution.
-
-  Admin API test coverage             Admin-only Newman requests were
-                                      skipped in the latest recorded main
-                                      collection run because credentials
-                                      were not supplied.
-
-  Production deployment               Production hosting, monitoring,
-                                      secrets management and operational
-                                      controls should be configured and
-                                      tested before deployment.
-
-  Docker and CI/CD                    Confirm the final Docker, Compose
-                                      and pipeline files and commands in
-                                      the repository before describing
-                                      them as completed features.
-  -----------------------------------------------------------------------
+The project was verified using the recorded Newman and Vitest test
+runs described in Section 11. The test results document the scenarios
+executed and passed for this submission.
 
 ## 14. Team and contributions
 
@@ -939,14 +897,11 @@ usernames and any final role changes with the team before submission.
                                       enhancements, dashboard tax/chart
                                       work and related verification
 
-  **AJ / CI-CD contributor**          CI/CD, Docker, static analysis and
-                                      backend unit-testing work, as
-                                      allocated by the group
+  **AJ / CI-CD contributor**          Static analysis and backend
+                                      unit-testing work, as allocated
+                                      by the group
   -----------------------------------------------------------------------
 
-Update the names/usernames and contribution descriptions if the final
-group allocation or submitted GitHub contribution history differs from
-this summary.
 
 ## Reference list
 

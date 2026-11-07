@@ -61,7 +61,8 @@ jobs:
       # service container so a startup problem prints the database log instead of failing silently
       - name: Start MongoDB
         run: |
-          docker run -d --name mongo -p 27017:27017 mongo:8
+          # shortcut: MongoDB 8 refuses to start on the runner's Linux kernel 6.19+ (SERVER-121912); move back to 8 once fixed
+          docker run -d --name mongo -p 27017:27017 mongo:7
           for i in $(seq 1 30); do
             docker exec mongo mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok" > /dev/null 2>&1 \
               && echo "MongoDB is up" && exit 0

@@ -1,6 +1,7 @@
 services:
   mongo:
-    image: mongo:8
+    # shortcut: MongoDB 8 refuses to start on Linux kernel 6.19+ (SERVER-121912); move back to 8 once fixed
+    image: mongo:7
     restart: unless-stopped
     volumes:
       - mongo-data:/data/db

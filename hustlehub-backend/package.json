@@ -6,7 +6,7 @@
   "scripts": {
     "test": "newman run postman/HustleHub-Gigs.postman_collection.json --insecure",
     "test:unit": "node --test \"unit-tests/*.test.js\"",
-    "test:rate-limits":"newman run postman/HustleHub-RateLimits.postman_collection.json --insecure",
+    "test:rate-limits": "newman run postman/HustleHub-RateLimits.postman_collection.json --insecure",
     "dev": "nodemon server.js",
     "seed:admin": "node scripts/seedAdmin.js"
   },
@@ -15,6 +15,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@logtail/node": "^0.6.1",
+    "@logtail/winston": "^0.6.1",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -24,6 +26,7 @@
     "joi": "^18.2.5",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.2",
+    "winston": "^3.19.0",
     "xss": "^1.0.15"
   },
   "devDependencies": {

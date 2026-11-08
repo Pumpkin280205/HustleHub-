@@ -10,6 +10,9 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --chown=node:node . .
 
+# Create the logs folder so the app can save its log files
+RUN mkdir -p logs && chown node:node logs
+
 # Never run the API as root inside the container
 USER node
 

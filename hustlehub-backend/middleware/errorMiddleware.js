@@ -9,7 +9,7 @@ const errorHandler = (err, req, res, next) => {
         message: err.message,
         statusCode,
         method: req.method,
-        path: req.originalUrl.split('?')[0],
+        path: (req.originalUrl || '').split('?')[0],
         ip: req.ip,
         userId: req.user ? req.user.id : null
     };

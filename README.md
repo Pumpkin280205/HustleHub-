@@ -826,7 +826,26 @@ provide supporting security evidence.
 3. **Figure 3 – Full frontend Vitest results.** 
 <img width="1312" height="701" alt="image" src="https://github.com/user-attachments/assets/9f6fde31-55cf-440d-937f-aae88cff2a70" />
 
+4. **Figure 4 – Successful User Registration (201 Created).**
 
+   <img width="1536" height="960" alt="image" src="https://github.com/user-attachments/assets/2ec63343-737e-4836-9fb6-1fb49ac434f9" />
+
+
+5. **Figure 5 – Successful User Login and JWT Generation (200 OK).**
+<img width="1536" height="960" alt="image" src="https://github.com/user-attachments/assets/79dfdfa5-d5c7-4230-b918-1e4379e1a057" />
+
+6. **Figure 6 – Invalid Login Credentials (401 Unauthorized).**
+<img width="1536" height="960" alt="image" src="https://github.com/user-attachments/assets/825be601-7844-4a55-8a50-c092a8a5965c" />
+
+7. **Figure 7 – Account Lockout After Repeated Failed Login Attempts (423 Locked).**
+<img width="1536" height="960" alt="image" src="https://github.com/user-attachments/assets/93c30185-b528-4bab-91b5-d10ee109d9c1" />
+
+8. **Figure 8 – Non-existent API Route Handling (404 Not Found).**
+<img width="1536" height="960" alt="image" src="https://github.com/user-attachments/assets/7bf68272-741f-408f-be2e-7e1c2e2d6bcb" />
+
+9. **Figure 9 – BetterStack Centralised Logging and Audit Events.**
+
+<img width="1536" height="960" alt="image" src="https://github.com/user-attachments/assets/fd7f0382-a8e8-42ff-b127-e5e491b71086" />
 
 
 

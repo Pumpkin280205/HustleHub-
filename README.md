@@ -176,6 +176,9 @@ fail a security check receive an appropriate HTTP error response.
 
   Frontend testing        Vitest, React Testing   Automated component and
                           Library, jsdom          user-interaction tests
+                          
+ Logging                 winston, Better Stack   Structured logs and
+                                                  cloud log monitoring
   -----------------------------------------------------------------------
 
 ## 5. Project structure
@@ -194,10 +197,15 @@ HustleHub+/
 │   │   ├── rateLimiters.js
 │   │   ├── roleMiddleware.js
 │   │   └── validationMiddleware.js
+│   │   └── requestLogger.js
 │   ├── models/
 │   ├── routes/
 │   ├── scripts/
 │   │   └── seedAdmin.js
+│   ├── utils/
+│   │   ├── logger.js
+│   │   ├── audit.js
+│   │   └── lockout.js
 │   ├── postman/
 │   │   ├── HustleHub-Gigs.postman_collection.json
 │   │   └── HustleHub-RateLimits.postman_collection.json
@@ -238,6 +246,8 @@ erDiagram
         string email
         string password
         string role
+        number failedAttempts
+        date lockUntil
     }
     GIG {
         string title
@@ -336,6 +346,9 @@ The following endpoint groups are documented by the application:
 
   DELETE                  `/admin/gigs/:id`       Administrative gig
                                                   moderation
+                                                  
+  GET                     `/admin/audit`          Admin-only audit log
+                                                  (latest 100 entries)
   -----------------------------------------------------------------------
 
 Common HTTP status codes:
@@ -360,6 +373,9 @@ Common HTTP status codes:
 
   409                                 Conflict, such as an already
                                       registered email
+                                      
+  423                                 Account temporarily locked after
+                                      repeated failed logins
 
   429                                 Rate limit exceeded
 
@@ -466,6 +482,29 @@ file must not be committed to the repository.
 The backend uses centralised error handling to return controlled
 responses. Detailed internal errors should not be exposed to API
 clients.
+
+### 8.9 Logging and monitoring
+
+The API uses **winston** for structured JSON logging. Logs are written to the console, to local files in `logs/` (`app.log`, `error.log`, `audit.log`) and to **Better Stack** (cloud), so logs are searchable and survive container restarts. Cloud logging is configured with two environment variables: `BETTER_STACK_SOURCE_TOKEN` and `BETTER_STACK_INGESTING_HOST`.
+
+| Category | Examples | Why |
+|---|---|---|
+| auth | registration, login success, login failure, account lockout | Detect brute-force and credential-stuffing attempts |
+| booking | booking created, unauthorised booking access attempts | Traceability and detecting access-control abuse |
+| transaction | transaction processed, rolled back, history viewed | Financial traceability and dispute resolution |
+| http | method, path, status code, duration, IP | Performance monitoring and abuse detection |
+| error | server errors (5xx) and client errors (4xx) | Debugging without exposing internals to clients |
+| admin / audit | admin listing users, admin deleting gigs | Accountability for privileged actions |
+
+**Never logged:** passwords, password hashes, JWTs, Authorization headers, request bodies, query strings or stack traces. A redaction filter in `utils/logger.js` also strips any field named like a password, token, secret or authorization header, as a safety net.
+
+### 8.10 Account lockout
+
+After 5 consecutive failed logins, an account is locked for 15 minutes and login attempts return HTTP 423. The failed-attempt counter and lock expiry are stored on the user (`failedAttempts`, `lockUntil`). A locked account is refused before the password is checked, and a successful login resets the counter. Unknown emails and wrong passwords return the same 401 response, so lockout does not reveal which accounts exist. This slows brute-force attacks.
+
+### 8.11 Admin audit log
+
+Security-relevant actions (registration, login success and failure, lockouts, bookings, denied booking access and admin actions) are recorded as one JSON line each in `logs/audit.log` and also sent to Better Stack. Each entry records the time, action, actor ID and role, target ID, IP address and outcome. Admins can read the latest 100 entries with `GET /api/admin/audit`, which requires a valid JWT and the `admin` role.
 
 ## 9. Security review: threats and protections
 
@@ -602,6 +641,8 @@ MONGO_URI=<your-mongodb-connection-string>
 JWT_SECRET=<your-long-random-secret>
 ADMIN_EMAIL=<your-admin-email>
 ADMIN_PASSWORD=<your-strong-admin-password>
+BETTER_STACK_SOURCE_TOKEN=<your-better-stack-source-token>
+BETTER_STACK_INGESTING_HOST=<your-better-stack-ingesting-host>
 API_RATE_LIMIT=300
 AUTH_RATE_LIMIT=10
 BOOKING_RATE_LIMIT=20

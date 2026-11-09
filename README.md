@@ -7,8 +7,9 @@ completed bookings.
 
   Deliverable                  Link
   ---------------------------- ------------------------------
-  Part 1 demonstration video   https://youtu.be/EAS0zCbsnIk
-  Part 2 demonstration video   https://youtu.be/QLtFmcK9Nzs
+  Part 1 demonstration video - https://youtu.be/EAS0zCbsnIk  
+  Part 2 demonstration video -  https://youtu.be/QLtFmcK9Nzs  
+  Final Part demonstration video - https://youtu.be/OcpO8lRJDdI
 
 ------------------------------------------------------------------------
 
